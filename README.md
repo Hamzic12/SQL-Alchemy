@@ -2,8 +2,13 @@
 ## Úvod do SQLAlchemy
 ### Instalace
 ````
-pip install mysqlclient
 pip install sqlalchemy
+````
+````
+pip install mysqlclient
+````
+````
+pip install mysql-connector-python
 ````
 ### Databáze
 Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry
