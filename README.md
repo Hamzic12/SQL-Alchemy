@@ -91,13 +91,13 @@ Tabulka splacených úverů
 
 ### <b>Základy</b>
 Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
-- "<dialect>" = druh databáze
-- "<driver>" = ?
-- "<username>" = uživatelské jméno
-- "<password>" = heslo
-- "<host>" = Vetšinou to bývá Ip adresa
-- "<port>" = jaký port
-- "<database>" = jakou databázi
+- dialect = druh databáze
+- driver = ?
+- username = uživatelské jméno
+- password = heslo
+- host = Vetšinou to bývá Ip adresa
+- port = jaký port
+- database = jakou databázi
 ````
 engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
 ````
