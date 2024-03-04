@@ -1,5 +1,10 @@
 # SQL-Alchemy
 ## Úvod do SQLAlchemy
+### Instalace
+````
+pip install mysqlclient
+pip install sqlalchemy
+````
 ### Databáze
 Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry
 ### ERD
