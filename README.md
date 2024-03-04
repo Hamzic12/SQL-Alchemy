@@ -1,5 +1,9 @@
-# SQL-Alchemy
+# SQL Alchemy
 ## Úvod do SQLAlchemy
+### Co to je SQLAlchemy?
+SQLAlchemy je framewrok na komunikaci mezi Python a SQL, která umožňuje vývojářům přistupovat a spravovat databáze SQL pomocí jazyka Python. Práce s objekty poskytuje vývojářům flexibilitu a umožňuje jim vytvářet vysoce výkonné aplikace založené na SQL.
+### Co to je ORM
+Object Realtion Mapping (Objektově relační zobrazení) je programovací technika v softwarovém inženýrství, která zajišťuje automatickou konverzi dat mezi relační databází a objektově orientovaným programovacím jazykem.
 ### Instalace
 ````
 pip install sqlalchemy
@@ -9,6 +13,9 @@ pip install mysqlclient
 ````
 ````
 pip install mysql-connector-python
+````
+````
+pip install flask
 ````
 ### Databáze
 Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry
@@ -81,3 +88,55 @@ Tabulka splacených úverů
 - <i>loan_type</i> = Typ úvěru
 - <i>instalment</i> = Výše úvěru
 - <i>account_id</i> = Identifikátor účtu
+
+### Zaklady
+Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
+- <dialect> = druh databáze
+- <driver> = ?
+- <username> = uživatelské jméno
+- <password> = heslo
+- <host> = Vetšinou to bývá Ip adresa
+- <port> = jaký port
+- <database> = jakou databázi
+````
+engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
+
+````
+
+declarative_base slouží k vytváření modelů.
+````
+Base = declarative_base()
+
+````
+
+Tabulka, je třída, která dědí z objektu Base.
+````
+class Customer(Base):
+    __tablename__ = 'customer'
+
+    customer_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(25), nullable=False)
+    surname = Column(String(46), nullable=False)
+    active_flag = Column(Enum('Y', 'N'), nullable=False, default='Y', server_default='Y')
+    
+    __table_args__ = (
+        UniqueConstraint('customer_id', name='customer_id_UNIQUE'),
+    )
+
+````
+
+A nakonec k vytvořeni databáze a všechny tabulky.
+````
+Base.metadata.create_all(engine)
+
+````
+
+### Úkol č. 1:
+
+### Úkol č. 2:
+
+### Úkol č. 3:
+
+### Úkol č. 4:
+
+### Úkol č. 5:
