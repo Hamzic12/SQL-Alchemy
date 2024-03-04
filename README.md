@@ -89,24 +89,22 @@ Tabulka splacených úverů
 - <i>instalment</i> = Výše úvěru
 - <i>account_id</i> = Identifikátor účtu
 
-### Zaklady
+### <b>Základy</b>
 Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
-- <dialect> = druh databáze
-- <driver> = ?
-- <username> = uživatelské jméno
-- <password> = heslo
-- <host> = Vetšinou to bývá Ip adresa
-- <port> = jaký port
-- <database> = jakou databázi
+- "<dialect>" = druh databáze
+- "<driver>" = ?
+- "<username>" = uživatelské jméno
+- "<password>" = heslo
+- "<host>" = Vetšinou to bývá Ip adresa
+- "<port>" = jaký port
+- "<database>" = jakou databázi
 ````
 engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
-
 ````
 
 declarative_base slouží k vytváření modelů.
 ````
 Base = declarative_base()
-
 ````
 
 Tabulka, je třída, která dědí z objektu Base.
@@ -122,13 +120,11 @@ class Customer(Base):
     __table_args__ = (
         UniqueConstraint('customer_id', name='customer_id_UNIQUE'),
     )
-
 ````
 
 A nakonec k vytvořeni databáze a všechny tabulky.
 ````
 Base.metadata.create_all(engine)
-
 ````
 
 ### Úkol č. 1:
