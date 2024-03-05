@@ -17,6 +17,91 @@ pip install mysql-connector-python
 ````
 pip install flask
 ````
+## 1. Část
+1) Tvorba databáze
+### Base
+````
+Base = declarative_base()
+````
+- funkce používaná k vytvoření základní třídy, která slouží jako základ pro vytváření deklarativních tříd mapujících objekty na databázové tabulky
+
+### Tabulka
+class MyTable(Base):
+	__tablename__ = 'my_table'
+
+
+### Primární klíč
+````
+class MyTable(Base):
+	__tablename__ = 'my_table'
+	id = Column(Integer, primary_key=True, autoincrement=True)
+````
+- Primární klíč definuje hlavní a jedinečný identifikátor tabulky
+
+### Text
+````
+class MyTable(Base):
+	__tablename__ = 'my_table'
+	id = Column(Integer, primary_key=True, autoincrement=True)
+	text = Column(String(255))
+````
+
+### Datum
+````
+class MyTable(Base):
+	__tablename__ = 'my_table'
+	id = Column(Integer, primary_key=True, autoincrement=True)
+	text = Column(String(255))
+	birthdate = Column(Date)
+````
+- V SQLAlchemy se sloupec typu Date formátuje podle databázového systému nebo backendu
+	- SQLite obvykle ukládá datum ve formátu 'YYYY-MM-DD'.
+	- MySQL používá formát 'YYYY-MM-DD'.
+	- PostgreSQL obvykle používá formát 'YYYY-MM-DD'.
+	- Oracle může používat odlišný formát, například 'DD-MON-YYYY'.
+	- SQL Server používá formát 'YYYY-MM-DD'.
+
+### DateTime
+````
+class MyTable(Base):
+	__tablename__ = 'my_table'
+	id = Column(Integer, primary_key=True, autoincrement=True)
+	text = Column(String(255))
+	birthdate = Column(Date)
+	created_at = Column(DateTime(timezone=True))
+````
+- DateTime sloupec v SQLAlchemy reprezentuje časový okamžik obsahující datum a čas a může být používán k ukládání hodnoty s informacemi o datumu a čase
+- Formát je definován dle backendu
+- 'timezone' -> Tento parametr umožňuje specifikovat, zda chcete pracovat s časy v lokálním časovém pásmu (True), v UTC (False), nebo se chcete postavit na svou vlastní správu časových pásem (tzinfo objekt).
+
+### Defaultní hodnota
+````
+class MyTable(Base):
+	__tablename__ = 'my_table'
+	id = Column(Integer, primary_key=True, autoincrement=True)
+	text = Column(String(255))
+	birthdate = Column(Date)
+	created_at = Column(DateTime(timezone=True), server_default=func.now())
+````
+- V tomto případě jsme využili funkce, která nastaví defaultní hodnotu jako aktuální datum a čas
+
+### Nastavení relace
+````
+class FirstTable(Base):
+	__tablename__ = 'first_table'
+	id = Column(Integer, primary_key=True, autoincrement=True)
+	text = Column(String(255))
+	birthdate = Column(Date)
+	created_at = Column(DateTime(timezone=True), server_default=func.now())
+	vztah = relationship("second_table")
+	
+class SecondTable(Base):
+    __tablename__ = 'second_table'
+    id = Column(Integer, primary_key=True)
+    first_table_id = Column(Integer, ForeignKey('first_table.id'))
+````
+
+## 2. Část
 ### Databáze
 Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry
 ### ERD
