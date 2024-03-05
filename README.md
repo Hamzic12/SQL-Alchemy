@@ -93,7 +93,7 @@ class FirstTable(Base):
 	text = Column(String(255))
 	birthdate = Column(Date)
 	created_at = Column(DateTime(timezone=True), server_default=func.now())
-	vztah = relationship("second_table")
+	vztah = relationship("SecondTable")
 	
 class SecondTable(Base):
     __tablename__ = 'second_table'
@@ -101,6 +101,7 @@ class SecondTable(Base):
     first_table_id = Column(Integer, ForeignKey('first_table.id'))
 ````
 - Cizí klíč je identifikátor tabulky, který definuje relaci
+- POZOR: Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
 ### 1. Úkol
 Vytvořte databázi se třemi tabulkami o zákazníkovi:
 - zakaznik
