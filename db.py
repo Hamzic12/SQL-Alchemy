@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Enum, ForeignKey, UniqueConstraint, Index
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, sessionmaker
 import mysql.connector
 
 Base = declarative_base()
@@ -158,3 +158,109 @@ def vytvor():
     engine = create_engine('mysql+mysqlconnector://root:secret@mariadb:3306/mydb', echo=True)
     Base.metadata.create_all(engine)
 
+def generuj():
+    engine = create_engine('mysql+mysqlconnector://root:secret@mariadb:3306/mydb', echo=True)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    # Vložení dat do tabulky CUSTOMER
+    session.add_all([
+        Customer(name='John', surname='Doe', active_flag='Y'),
+        Customer(name='Alice', surname='Smith', active_flag='Y'),
+        Customer(name='Bob', surname='Johnson', active_flag='N'),
+        Customer(name='Eva', surname='Nováková', active_flag='Y'),
+        Customer(name='Martin', surname='Svoboda', active_flag='N'),
+    ])
+
+    session.commit()
+
+    # Vložení dat do tabulky ACCOUNT
+    session.add_all([
+        Account(acc_type='STANDARD', account_number=1234, acc_balance=5000, active_flag='Y', customer_id=1),
+        Account(acc_type='PLUS', account_number=5678, acc_balance=8000, active_flag='N', customer_id=2),
+        Account(acc_type='STANDARD', account_number=9876, acc_balance=3000, active_flag='Y', customer_id=3),
+        Account(acc_type='PLUS', account_number=5432, acc_balance=6000, active_flag='N', customer_id=4),
+        Account(acc_type='STANDARD', account_number=6543, acc_balance=7000, active_flag='Y', customer_id=5),
+    ])
+
+    session.commit()
+
+    # Vložení dat do tabulky BANK_USER
+    session.add_all([
+        BankUser(name='Adam', surname='White', active_flag='Y'),
+        BankUser(name='Sophie', surname='Brown', active_flag='Y'),
+        BankUser(name='Jack', surname='Miller', active_flag='N'),
+        BankUser(name='Linda', surname='Anderson', active_flag='Y'),
+        BankUser(name='Michael', surname='Young', active_flag='N'),
+    ])
+
+    session.commit()
+
+    # Vložení dat do tabulky LOAN_UNPAYED
+    session.add_all([
+        LoanUnpayed(loan_type='AUTO', rem_instalment=24, instalment=4000, month_instalment=200, account_id=1, bank_user_id=1),
+        LoanUnpayed(loan_type='HYPO', rem_instalment=36, instalment=8000, month_instalment=300, account_id=2, bank_user_id=2),
+        LoanUnpayed(loan_type='INVEST', rem_instalment=12, instalment=3000, month_instalment=250, account_id=3, bank_user_id=3),
+        LoanUnpayed(loan_type='AUTO', rem_instalment=18, instalment=6000, month_instalment=350, account_id=4, bank_user_id=4),
+        LoanUnpayed(loan_type='HYPO', rem_instalment=30, instalment=7000, month_instalment=400, account_id=5, bank_user_id=5),
+    ])
+
+    session.commit()
+
+    # Vložení dat do tabulky BANK_USER_CONTACT
+    session.add_all([
+        BankUserContact(phone_work='123-456-7890', email_work='adam.white@example.com', phone_personal='987-654-3210', email_personal='adam.personal@example.com', bank_user_id=1),
+        BankUserContact(phone_work='234-567-8901', email_work='sophie.brown@example.com', phone_personal='876-543-2109', email_personal='sophie.personal@example.com', bank_user_id=2),
+        BankUserContact(phone_work='345-678-9012', email_work='jack.miller@example.com', phone_personal='765-432-1098', email_personal='jack.personal@example.com', bank_user_id=3),
+        BankUserContact(phone_work='456-789-0123', email_work='linda.anderson@example.com', phone_personal='654-321-0987', email_personal='linda.personal@example.com', bank_user_id=4),
+        BankUserContact(phone_work='567-890-1234', email_work='michael.young@example.com', phone_personal='543-210-9876', email_personal='michael.personal@example.com', bank_user_id=5),
+    ])
+
+    session.commit()
+
+    # Vložení dat do tabulky BANK_USER_ADDRESS
+    session.add_all([
+        BankUserAddress(psc='12345', city='New York', street='Broadway', number='42', domicile_flag='Y', bank_user_id=1),
+        BankUserAddress(psc='54321', city='Los Angeles', street='Hollywood Blvd', number='7', domicile_flag='N', bank_user_id=2),
+        BankUserAddress(psc='67890', city='Chicago', street='Michigan Ave', number='15', domicile_flag='Y', bank_user_id=3),
+        BankUserAddress(psc='98765', city='San Francisco', street='Market St', number='20', domicile_flag='N', bank_user_id=4),
+        BankUserAddress(psc='87654', city='Miami', street='Ocean Dr', number='30', domicile_flag='Y', bank_user_id=5),
+    ])
+
+    session.commit()
+
+    # Vložení dat do tabulky CUSTOMER_ADDRESS
+    session.add_all([
+        CustomerAddress(psc='12345', city='Prague', street='Main St', number='1', domicile_flag='Y', customer_id=1),
+        CustomerAddress(psc='54321', city='Brno', street='Masaryk St', number='5', domicile_flag='N', customer_id=2),
+        CustomerAddress(psc='67890', city='Ostrava', street='Long St', number='15', domicile_flag='Y', customer_id=3),
+        CustomerAddress(psc='98765', city='Plzen', street='Square St', number='20', domicile_flag='N', customer_id=4),
+        CustomerAddress(psc='87654', city='Liberec', street='Freedom St', number='30', domicile_flag='Y', customer_id=5),
+    ])
+
+    session.commit()
+
+    # Vložení dat do tabulky CUSTOMER_CONTACT
+    session.add_all([
+        CustomerContact(phone='123-456-7890', email='john.doe@example.com', customer_id=1),
+        CustomerContact(phone='234-567-8901', email='alice.smith@example.com', customer_id=2),
+        CustomerContact(phone='345-678-9012', email='bob.johnson@example.com', customer_id=3),
+        CustomerContact(phone='456-789-0123', email='eva.novakova@example.com', customer_id=4),
+        CustomerContact(phone='567-890-1234', email='martin.svoboda@example.com', customer_id=5),
+    ])
+
+    session.commit()
+
+    # Vložení dat do tabulky LOAN_PAYED
+    session.add_all([
+        LoanPayed(loan_type='AUTO', instalment=4000, account_id=1),
+        LoanPayed(loan_type='HYPO', instalment=8000, account_id=2),
+        LoanPayed(loan_type='INVEST', instalment=3000, account_id=3),
+        LoanPayed(loan_type='AUTO', instalment=6000, account_id=4),
+        LoanPayed(loan_type='HYPO', instalment=7000, account_id=5),
+    ])
+
+    session.commit()
+
+    # Uzavření Session
+    session.close()
