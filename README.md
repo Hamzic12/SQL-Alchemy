@@ -1,4 +1,4 @@
-# SQL Alchemy
+# SQLAlchemy
 ## Úvod do SQLAlchemy
 ### Co to je SQLAlchemy?
 SQLAlchemy je framewrok na komunikaci mezi Python a SQL, která umožňuje vývojářům přistupovat a spravovat databáze SQL pomocí jazyka Python. Práce s objekty poskytuje vývojářům flexibilitu a umožňuje jim vytvářet vysoce výkonné aplikace založené na SQL.
@@ -92,7 +92,7 @@ Tabulka splacených úverů
 ### <b>Základy</b>
 Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
 - dialect = druh databáze
-- driver = ?
+- driver = DBAPI
 - username = uživatelské jméno
 - password = heslo
 - host = Vetšinou to bývá Ip adresa
@@ -109,17 +109,16 @@ Base = declarative_base()
 
 Tabulka, je třída, která dědí z objektu Base.
 ````
-class Customer(Base):
-    __tablename__ = 'customer'
+class Table1(Base):
+    __tablename__ = 'Tabel1'
 
-    customer_id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(25), nullable=False)
-    surname = Column(String(46), nullable=False)
-    active_flag = Column(Enum('Y', 'N'), nullable=False, default='Y', server_default='Y')
+    id = Column(Integer, primary_key=True, nullable=False)
+    column1 = Column(String)
+    column2 = Column(Integer)
+    column3 = Column(Date)
     
-    __table_args__ = (
-        UniqueConstraint('customer_id', name='customer_id_UNIQUE'),
-    )
+    table2_id = relationship(Integer, foreign_keys='Table2.id') #one to many
+    #one to many
 ````
 
 A nakonec k vytvořeni databáze a všechny tabulky.
@@ -128,8 +127,10 @@ Base.metadata.create_all(engine)
 ````
 
 ### Úkol č. 1:
+Vytvořte databázi s třemi tabulkami zákzaníkovi(tabulka1=id, jméno, příjmení | tabulka2=id, telefon, email | tabulka3=id, ulice, mesto, psc).
 
 ### Úkol č. 2:
+Vytvořte funkci, ktera najde kolik zákazníku bydlí na vámi vybrané PSČ. 
 
 ### Úkol č. 3:
 
