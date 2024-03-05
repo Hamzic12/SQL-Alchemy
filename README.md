@@ -18,7 +18,7 @@ pip install mysql-connector-python
 pip install flask
 ````
 ## 1. Část
-1) Tvorba databáze
+### Tvorba databáze
 ### Base
 ````
 Base = declarative_base()
@@ -100,6 +100,24 @@ class SecondTable(Base):
     id = Column(Integer, primary_key=True)
     first_table_id = Column(Integer, ForeignKey('first_table.id'))
 ````
+
+### 1. Úkol
+Vytvořte databázi se třemi tabulkami o zákazníkovi:
+- zakaznik
+	- Id
+ 	- Jméno
+ 	- Příjmení
+ 	- Datum vytvoření
+- zakaznik_kontakt
+ 	- Id
+ 	- Telefon
+ 	- Email
+- zakaznik_adresa
+ 	- Id
+ 	- Ulice
+ 	- Město
+ 	- PSČ
+ 	- Trvalé bydliště (Ano/Ne)
 
 ## 2. Část
 ### Databáze
