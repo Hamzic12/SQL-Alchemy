@@ -1279,7 +1279,41 @@ for adresa in vysledky:
 ````
 
 ### Úkol č. 2:
+- Vytvořte všechny joiny, které jsme si zde představili nad tabulkami 'Customer' a 'CustomerAdress'
+Řešení:
+````
+vysledky_inner = session.query(Customer, CustomerAddress).join(CustomerAddress, Customer.customer_id == CustomerAddress.customer_id).all()
+vysledky_left = session.query(Customer).outerjoin(CustomerAddress, Customer.customer_id == CustomerAddress.customer_id).all()
+vysledky_right = session.query(CustomerAddress).outerjoin(Customer, Customer.customer_id == CustomerAddress.customer_id).all()
+````
+Výpis:
+````
+for zakaznik, adresa in vysledky_inner:
+    print(f"{zakaznik.name} - {adresa.street}, {adresa.city}")
+    
+print()
 
+for zakaznik in vysledky_left:
+    adresy = zakaznik.addresses
+
+    if adresy:
+        for adresa in adresy:
+            print(f"{zakaznik.name} - {adresa.street}, {adresa.city}")
+    else:
+        print(f"{zakaznik.name} - nemá adresu")
+        
+print()
+
+for kontakt in vysledky_right:
+    zakaznik = kontakt.customer
+    kontakty = zakaznik.contacts
+
+    if kontakty:
+        for k in kontakty:
+            print(f"{zakaznik.name} - {k.email}, {k.phone}")
+    else:
+        print(f"{zakaznik.name} - nemá kontakt")
+````
 ### Úkol č. 3:
 
 ### Úkol č. 4:
