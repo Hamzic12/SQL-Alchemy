@@ -1314,8 +1314,53 @@ for kontakt in vysledky_right:
     else:
         print(f"{zakaznik.name} - nemá kontakt")
 ````
-### Úkol č. 3:
 
+### Vytvoření cache
+Pro lepší výkonnost je možné využívat cachce - Malá, ale velice rychlá paměť
+````
+from werkzeug.utils import cached_property
+````
+````
+class Osoba(Base):
+    ...
+
+    @cached_property
+    def plne_jmeno(self):
+        return f"{self.jmeno} {self.prijmeni}"
+
+session = Session()
+
+osoba = session.query(Osoba).filter(Osoba.id == 1).first()
+session.close()
+````
+Výpis:
+````
+print(osoba.plne_jmeno)
+````
+### Úkol č. 3:
+- Vytvořte pro tabulku 'Customer' cache pro jméno a příjmení
+Řešení:
+````
+class Customer(Base):
+    __tablename__ = 'customer'
+
+    customer_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(25), nullable=False)
+    surname = Column(String(46), nullable=False)
+    active_flag = Column(Enum('Y', 'N'), nullable=False, default='Y', server_default='Y')
+    
+    __table_args__ = (
+        UniqueConstraint('customer_id', name='customer_id_UNIQUE'),
+    )
+    @cached_property
+    def full_name(self):
+        return f"{self.name} {self.surname}"
+````
+Výpis:
+````
+zakaznik = session.query(Customer).filter(Customer.customer_id == 1).first()
+print(zakaznik.full_name)
+````
 ### Úkol č. 4:
 
 ### Úkol č. 5:
