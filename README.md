@@ -1361,6 +1361,26 @@ Výpis:
 zakaznik = session.query(Customer).filter(Customer.customer_id == 1).first()
 print(zakaznik.full_name)
 ````
-### Úkol č. 4:
+## 3. Část
 
-### Úkol č. 5:
+### 1. Dotazy a analýzy:
+a) Vypište všechny zákazníky a jejich zůstatky na účtech.
+b) Vypočítejte celkový zůstatek na všech účtech.
+c) Vyhledejte nezaplacené půjčky a připojte k nim jména zákazníků
+d) Sestavte přehled počtu zákazníků a bankovních uživatelů v jednotlivých městech.
+
+### 2. Úpravy a aktualizace:
+a) Přidejte nového zákazníka s účtem a kontaktními údaji.
+b) Změňte adresu jednoho z bankovních uživatelů.
+c) Aktualizujte stav půjčky z "Nezaplaceno" na "Splaceno" (Y/N).
+d) Deaktivujte účet zákazníka, který si přeje ukončit spolupráci.
+
+### 3. Experimenty s funkcionalitami:
+a) Vytvořte příkaz, který zobrazí detailní informace o konkrétním účtu.
+b) Vytvořte příkaz pro vyhledávání zákazníků podle jména nebo příjmení.
+c) Vytvořte report, který zobrazí přehled zůstatků na účtech seřazený sestupně.
+d) Vytvořte příkaz pro simulaci výběru hotovosti z účtu.
+
+### 4. Opravy a kontroly:
+a) Vyhledejte a opravte chybné nebo nekonzistentní údaje v databázi (např. neodpovídající sumy).
+
