@@ -21,6 +21,13 @@ pip install flask
 ### Tvorba databáze
 
 ### <b>Základy</b>
+````
+from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
+from sqlalchemy.orm import relationship, declarative_base
+````
+````
+engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
+````
 Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
 - dialect = druh databáze
 - driver = DBAPI
@@ -29,9 +36,6 @@ Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci
 - host = Vetšinou to bývá Ip adresa
 - port = jaký port
 - database = jakou databázi
-````
-engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
-````
 
 ### Base
 ````
@@ -177,10 +181,7 @@ Vytvořte databázi se třemi tabulkami o zákazníkovi:
  	- Město
  	- PSČ
  	- Trvalé bydliště (Ano/Ne)
- ````
-from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
-from sqlalchemy.orm import relationship, declarative_base
-````
+
 Vytvoření databáze a tabulek:
 ````
 engine = create_engine('sqlite:///:memory:', echo=False)
