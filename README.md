@@ -396,10 +396,39 @@ session.commit()
 ````
 - Výpis pak provedme takto:
 ````
-session = Session()
 for row in result:
-    print(row.jmeno, row.prijmeni)
+    print(row.sloupec1, row.sloupec2)
+````
+- Filtrování v selectu se využívá pomocí <b>WHERE</b> podmínky
+- V SQLAlchemy vypadá syntaxe takto:
+````
+session = Session()
+result = session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == podminka).all()
 session.commit()
+````
+- Výpis pak provedme takto:
+````
+for row in result:
+    print(row.sloupec1, row.sloupec2)
+````
+- Důlěžitým prvkem může být také seřazení záznamů -> <b>Order By</b>
+- V SQLAlcehym vypadá syntaxe takto:
+- Pro <b>ASCENDING</b>:
+````
+session = Session()
+result = session.query(ZakaznikContact).order_by(ZakaznikContact.email.asc()).all()
+session.commit()
+````
+- Pro <b>DESCENDING</b>:
+````
+session = Session()
+result = session.query(ZakaznikContact).order_by(ZakaznikContact.email.desc()).all()
+session.commit()
+````
+- Výpis pak provedme takto:
+````
+for row in result:
+    print(row.sloupec1, row.sloupec2)
 ````
 ### 4. Úkol
 ## 2. Část
