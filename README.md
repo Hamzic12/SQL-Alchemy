@@ -19,6 +19,26 @@ pip install flask
 ````
 ## 1. Část
 ### Tvorba databáze
+
+### <b>Základy</b>
+
+````
+from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
+from sqlalchemy.orm import relationship, declarative_base
+````
+````
+engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
+````
+
+Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
+- dialect = druh databáze
+- driver = DBAPI
+- username = uživatelské jméno
+- password = heslo
+- host = Vetšinou to bývá Ip adresa
+- port = jaký port
+- database = jakou databázi
+
 ### Base
 ````
 Base = declarative_base()
@@ -86,6 +106,7 @@ class MyTable(Base):
 V tomto případě jsme využili funkce, která nastaví defaultní hodnotu jako aktuální datum a čas
 
 ### Nastavení relace
+1:N
 ````
 class FirstTable(Base):
 	__tablename__ = 'first_table'
@@ -99,6 +120,49 @@ class SecondTable(Base):
     __tablename__ = 'second_table'
     id = Column(Integer, primary_key=True)
     first_table_id = Column(Integer, ForeignKey('first_table.id'))
+````
+1:1
+````
+class Osoba(Base):
+    __tablename__ = "osoba"
+    
+    id = Column(Integer, primary_key=True)
+    jmeno = Column(String(255))
+    
+    rodny_list_id = Column(Integer, ForeignKey("rodny_list.id"))
+    rodny_list = relationship("RodnyList", uselist=False)
+
+class RodnyList(Base):
+    __tablename__ = "rodny_list"
+    
+    id = Column(Integer, primary_key=True)
+    cislo = Column(String(10))
+    osoba_id = Column(Integer, ForeignKey("osoba.id"))
+````
+M:N
+````
+class Osoba(Base):
+    __tablename__ = "osoba"
+    
+    id = Column(Integer, primary_key=True)
+    jmeno = Column(String(255))
+    
+    konicky = relationship("Konicek", secondary="osoba_konicek")
+
+class Konicek(Base):
+    __tablename__ = "konicek"
+    
+    id = Column(Integer, primary_key=True)
+    nazev = Column(String(255))
+    
+    osoby = relationship("Osoba", secondary="osoba_konicek")
+
+osoba_konicek = Table(
+    "osoba_konicek",
+    Base.metadata,
+    Column("osoba_id", Integer, ForeignKey("osoba.id")),
+    Column("konicek_id", Integer, ForeignKey("konicek.id")),
+)
 ````
 Cizí klíč je identifikátor tabulky, který definuje relaci
 - POZOR: Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
@@ -119,10 +183,18 @@ Vytvořte databázi se třemi tabulkami o zákazníkovi:
  	- Město
  	- PSČ
  	- Trvalé bydliště (Ano/Ne)
- ````
-from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
-from sqlalchemy.orm import relationship, declarative_base
+
+Vytvoření databáze a tabulek:
 ````
+engine = create_engine('sqlite:///:memory:', echo=False)
+
+# Vytvoření schématu (metadata) pro tabulky
+metadata = MetaData()
+
+# Vytvoření tabulek
+Base.metadata.create_all(engine)
+````
+Řešení:
 ````
 class Zakaznik(Base):
     __tablename__ = 'zakaznik'
@@ -188,6 +260,7 @@ Vytvořte relace mezi tabulkami o zákazníkovi:
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, MetaData, func, create_engine, inspect
 from sqlalchemy.orm import relationship, declarative_base
 ````
+Řešení:
 ````
 class Zakaznik(Base):
     __tablename__ = 'zakaznik'
@@ -294,6 +367,7 @@ Přidejte 5 záznamů do:
 	- 'zakaznik'
  	- 'zakaznik_kontakt'
 	- 'zakaznik_adresa'
+Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -435,6 +509,8 @@ Vytvořte z tabulky:
 - 'zakaznik' -> select, který vybere vše a vypíše jméno a příjmení 
 - 'zakaznik_adresa' -> select, který vybere pouze adresy trvalého bydliště a vypíše je
 - 'zakaznik_kontakt' -> select, který vybere vše a vypíše emaily seřazené sestupně
+
+Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -543,6 +619,8 @@ session.commit()
 ````
 ### Úkol 5
 Smažte z tabulky 'zakaznik_adresa' všechny adresy, které nejsou trvalé
+
+Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -643,8 +721,10 @@ session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == 'hodnota').update({
 session.commit()
 ````
 ### 6. Úkol
-Uprave sloupec 'ulice' v tabulce 'zakaznik_adresa':
+Upravte sloupec 'ulice' v tabulce 'zakaznik_adresa':
 - Pokud je město 'Cityville' -> ulice bude 'Nová ulice'
+
+Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -809,49 +889,498 @@ Tabulka splacených úverů
 - <i>instalment</i> = Výše úvěru
 - <i>account_id</i> = Identifikátor účtu
 
-### <b>Základy</b>
-Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
-- dialect = druh databáze
-- driver = DBAPI
-- username = uživatelské jméno
-- password = heslo
-- host = Vetšinou to bývá Ip adresa
-- port = jaký port
-- database = jakou databázi
+#### Toto si nahrajte do VSC:
 ````
-engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
-````
+from sqlalchemy import Column, Integer, String, Enum, MetaData, func, create_engine, inspect, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 
-declarative_base slouží k vytváření modelů.
-````
 Base = declarative_base()
-````
 
-Tabulka, je třída, která dědí z objektu Base.
-````
-class Table1(Base):
-    __tablename__ = 'Tabel1'
+class Customer(Base):
+    __tablename__ = 'customer'
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    column1 = Column(String)
-    column2 = Column(Integer)
-    column3 = Column(Date)
+    customer_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(25), nullable=False)
+    surname = Column(String(46), nullable=False)
+    active_flag = Column(Enum('Y', 'N'), nullable=False, default='Y', server_default='Y')
     
-    table2_id = relationship(Integer, foreign_keys='Table2.id') #one to many
-    #one to many
-````
+    __table_args__ = (
+        UniqueConstraint('customer_id', name='customer_id_UNIQUE'),
+    )
 
-A nakonec k vytvořeni databáze a všechny tabulky.
-````
+class Account(Base):
+    __tablename__ = 'account'
+
+    account_id = Column(Integer, primary_key=True, autoincrement=True)
+    acc_type = Column(Enum('STANDARD', 'PLUS'), nullable=False)
+    account_number = Column(Integer, nullable=False)
+    acc_balance = Column(Integer, nullable=False)
+    active_flag = Column(Enum('Y', 'N'), nullable=False, default='Y', server_default='Y')
+    customer_id = Column(Integer, ForeignKey('customer.customer_id'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('account_id', name='account_id_UNIQUE'),
+    )
+    customer = relationship('Customer', backref='accounts')
+
+class BankUser(Base):
+    __tablename__ = 'bank_user'
+
+    bank_user_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(25), nullable=False)
+    surname = Column(String(46), nullable=False)
+    active_flag = Column(Enum('Y', 'N'), nullable=False, default='Y', server_default='Y')
+    
+    __table_args__ = (
+        UniqueConstraint('bank_user_id', name='bank_user_id_UNIQUE'),
+    )
+
+class LoanUnpayed(Base):
+    __tablename__ = 'loan_unpayed'
+
+    loan_id = Column(Integer, primary_key=True, autoincrement=True)
+    loan_type = Column(Enum('AUTO', 'HYPO', 'INVEST'), nullable=False)
+    rem_instalment = Column(Integer, nullable=False)
+    instalment = Column(Integer, nullable=False)
+    month_instalment = Column(Integer, nullable=False)
+    account_id = Column(Integer, ForeignKey('account.account_id'), nullable=False)
+    bank_user_id = Column(Integer, ForeignKey('bank_user.bank_user_id'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('loan_id', name='loan_id_UNIQUE'),
+    )
+    account = relationship('Account', backref='loans_unpayed')
+    bank_user = relationship('BankUser', backref='loans_unpayed')
+
+class BankUserContact(Base):
+    __tablename__ = 'bank_user_contact'
+
+    bank_user_contact_id = Column(Integer, primary_key=True, autoincrement=True)
+    phone_work = Column(String(13), nullable=False)
+    email_work = Column(String(70), nullable=False)
+    phone_personal = Column(String(20), nullable=False)
+    email_personal = Column(String(70))
+    bank_user_id = Column(Integer, ForeignKey('bank_user.bank_user_id'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('bank_user_contact_id', name='bank_user_contact_id_UNIQUE'),
+    )
+    bank_user = relationship('BankUser', backref='contact_info')
+
+class BankUserAddress(Base):
+    __tablename__ = 'bank_user_address'
+
+    bank_user_adr_id = Column(Integer, primary_key=True, autoincrement=True)
+    psc = Column(String(5), nullable=False)
+    city = Column(String(34), nullable=False)
+    street = Column(String(41), nullable=False)
+    number = Column(String(7), nullable=False)
+    domicile_flag = Column(Enum('Y', 'N'), nullable=False)
+    bank_user_id = Column(Integer, ForeignKey('bank_user.bank_user_id'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('bank_user_adr_id', name='bank_user_adr_id_UNIQUE'),
+    )
+    bank_user = relationship('BankUser', backref='addresses')
+
+class CustomerAddress(Base):
+    __tablename__ = 'customer_address'
+
+    customer_address_id = Column(Integer, primary_key=True, autoincrement=True)
+    psc = Column(String(5), nullable=False)
+    city = Column(String(34), nullable=False)
+    street = Column(String(41), nullable=False)
+    number = Column(String(7), nullable=False)
+    domicile_flag = Column(Enum('Y', 'N'), nullable=False)
+    customer_id = Column(Integer, ForeignKey('customer.customer_id'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('customer_address_id', name='customer_address_id_UNIQUE'),
+    )
+    customer = relationship('Customer', backref='addresses')
+
+class CustomerContact(Base):
+    __tablename__ = 'customer_contact'
+
+    customer_contact_id = Column(Integer, primary_key=True, autoincrement=True)
+    phone = Column(String(20), nullable=False)
+    email = Column(String(70), nullable=False)
+    customer_id = Column(Integer, ForeignKey('customer.customer_id'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('customer_contact_id', name='customer_contact_id_UNIQUE'),
+    )
+    customer = relationship('Customer', backref='contacts')
+
+class LoanPayed(Base):
+    __tablename__ = 'loan_payed'
+
+    loan_hist_id = Column(Integer, primary_key=True, autoincrement=True)
+    loan_type = Column(Enum('AUTO', 'HYPO', 'INVEST'), nullable=False)
+    instalment = Column(Integer, nullable=False)
+    account_id = Column(Integer, ForeignKey('account.account_id'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('loan_hist_id', name='loan_hist_id_UNIQUE'),
+    )
+    account = relationship('Account', backref='loans_payed')
+
+
+engine = create_engine('sqlite:///:memory:', echo=False)
+
+# Vytvoření schématu (metadata) pro tabulky
+metadata = MetaData()
+
+# Vytvoření tabulek
 Base.metadata.create_all(engine)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+    # Vložení dat do tabulky CUSTOMER
+session.add_all([
+        Customer(name='John', surname='Doe', active_flag='Y'),
+        Customer(name='Alice', surname='Smith', active_flag='Y'),
+        Customer(name='Bob', surname='Johnson', active_flag='N'),
+        Customer(name='Eva', surname='Nováková', active_flag='Y'),
+        Customer(name='Martin', surname='Svoboda', active_flag='N'),
+    ])
+
+session.commit()
+
+    # Vložení dat do tabulky ACCOUNT
+session.add_all([
+        Account(acc_type='STANDARD', account_number=1234, acc_balance=5000, active_flag='Y', customer_id=1),
+        Account(acc_type='PLUS', account_number=5678, acc_balance=8000, active_flag='N', customer_id=2),
+        Account(acc_type='STANDARD', account_number=9876, acc_balance=3000, active_flag='Y', customer_id=3),
+        Account(acc_type='PLUS', account_number=5432, acc_balance=6000, active_flag='N', customer_id=4),
+        Account(acc_type='STANDARD', account_number=6543, acc_balance=7000, active_flag='Y', customer_id=5),
+    ])
+
+session.commit()
+
+    # Vložení dat do tabulky BANK_USER
+session.add_all([
+        BankUser(name='Adam', surname='White', active_flag='Y'),
+        BankUser(name='Sophie', surname='Brown', active_flag='Y'),
+        BankUser(name='Jack', surname='Miller', active_flag='N'),
+        BankUser(name='Linda', surname='Anderson', active_flag='Y'),
+        BankUser(name='Michael', surname='Young', active_flag='N'),
+    ])
+
+session.commit()
+
+# Vložení dat do tabulky LOAN_UNPAYED
+session.add_all([
+        LoanUnpayed(loan_type='AUTO', rem_instalment=24, instalment=4000, month_instalment=200, account_id=1, bank_user_id=1),
+        LoanUnpayed(loan_type='HYPO', rem_instalment=36, instalment=8000, month_instalment=300, account_id=2, bank_user_id=2),
+        LoanUnpayed(loan_type='INVEST', rem_instalment=12, instalment=3000, month_instalment=250, account_id=3, bank_user_id=3),
+        LoanUnpayed(loan_type='AUTO', rem_instalment=18, instalment=6000, month_instalment=350, account_id=4, bank_user_id=4),
+        LoanUnpayed(loan_type='HYPO', rem_instalment=30, instalment=7000, month_instalment=400, account_id=5, bank_user_id=5),
+    ])
+
+session.commit()
+
+    # Vložení dat do tabulky BANK_USER_CONTACT
+session.add_all([
+        BankUserContact(phone_work='123-456-7890', email_work='adam.white@example.com', phone_personal='987-654-3210', email_personal='adam.personal@example.com', bank_user_id=1),
+        BankUserContact(phone_work='234-567-8901', email_work='sophie.brown@example.com', phone_personal='876-543-2109', email_personal='sophie.personal@example.com', bank_user_id=2),
+        BankUserContact(phone_work='345-678-9012', email_work='jack.miller@example.com', phone_personal='765-432-1098', email_personal='jack.personal@example.com', bank_user_id=3),
+        BankUserContact(phone_work='456-789-0123', email_work='linda.anderson@example.com', phone_personal='654-321-0987', email_personal='linda.personal@example.com', bank_user_id=4),
+        BankUserContact(phone_work='567-890-1234', email_work='michael.young@example.com', phone_personal='543-210-9876', email_personal='michael.personal@example.com', bank_user_id=5),
+    ])
+
+session.commit()
+
+    # Vložení dat do tabulky BANK_USER_ADDRESS
+session.add_all([
+        BankUserAddress(psc='12345', city='New York', street='Broadway', number='42', domicile_flag='Y', bank_user_id=1),
+        BankUserAddress(psc='54321', city='Los Angeles', street='Hollywood Blvd', number='7', domicile_flag='N', bank_user_id=2),
+        BankUserAddress(psc='67890', city='Chicago', street='Michigan Ave', number='15', domicile_flag='Y', bank_user_id=3),
+        BankUserAddress(psc='98765', city='San Francisco', street='Market St', number='20', domicile_flag='N', bank_user_id=4),
+        BankUserAddress(psc='87654', city='Miami', street='Ocean Dr', number='30', domicile_flag='Y', bank_user_id=5),
+    ])
+
+session.commit()
+
+    # Vložení dat do tabulky CUSTOMER_ADDRESS
+session.add_all([
+        CustomerAddress(psc='12345', city='Prague', street='Main St', number='1', domicile_flag='Y', customer_id=1),
+        CustomerAddress(psc='54321', city='Brno', street='Masaryk St', number='5', domicile_flag='N', customer_id=2),
+        CustomerAddress(psc='67890', city='Ostrava', street='Long St', number='15', domicile_flag='Y', customer_id=3),
+        CustomerAddress(psc='98765', city='Plzen', street='Square St', number='20', domicile_flag='N', customer_id=4),
+        CustomerAddress(psc='87654', city='Liberec', street='Freedom St', number='30', domicile_flag='Y', customer_id=5),
+    ])
+
+session.commit()
+
+    # Vložení dat do tabulky CUSTOMER_CONTACT
+session.add_all([
+        CustomerContact(phone='123-456-7890', email='john.doe@example.com', customer_id=1),
+        CustomerContact(phone='234-567-8901', email='alice.smith@example.com', customer_id=2),
+        CustomerContact(phone='345-678-9012', email='bob.johnson@example.com', customer_id=3),
+        CustomerContact(phone='456-789-0123', email='eva.novakova@example.com', customer_id=4),
+        CustomerContact(phone='567-890-1234', email='martin.svoboda@example.com', customer_id=5),
+    ])
+
+session.commit()
+
+    # Vložení dat do tabulky LOAN_PAYED
+session.add_all([
+        LoanPayed(loan_type='AUTO', instalment=4000, account_id=1),
+        LoanPayed(loan_type='HYPO', instalment=8000, account_id=2),
+        LoanPayed(loan_type='INVEST', instalment=3000, account_id=3),
+        LoanPayed(loan_type='AUTO', instalment=6000, account_id=4),
+        LoanPayed(loan_type='HYPO', instalment=7000, account_id=5),
+    ])
+
+session.commit()
+
+    # Uzavření Session
+session.close()
+    
+inspector = inspect(engine)
+    
+table_names = inspector.get_table_names()
+print(f"Seznam tabulek: {table_names}")
 ````
 
-### Úkol č. 1:
+### Agregační funkce v SQLAlchemy
+- <b>sum()</b>: Součet hodnot v daném sloupci.
+- <b>avg()</b>: Průměr hodnot v daném sloupci.
+- <b>count()</b>: Počet záznamů v dané tabulce.
+- <b>min()</b>: Minimum hodnot v daném sloupci.
+- <b>max()</b>: Maximum hodnot v daném sloupci.
 
-### Úkol č. 2:
+Pro využití funkcí je potřeba importovat 'func':
+````
+from sqlalchemy import func
+````
 
-### Úkol č. 3:
+Příklad použití:
+````
+session = Session()
+prumerny_plat = session.query(func.avg(Zamestnanec.plat)).scalar()
+pocet_zamestnancu = session.query(func.count(Zamestnanec.id)).scalar()
+session.commit()
+````
+Výpis výsledků:
+````
+print(f"Průměrný plat: {prumerny_plat}")
+print(f"Počet zaměstnanců: {pocet_zamestnancu}")
+````
 
-### Úkol č. 4:
+Proč .scalar?
+- Scalar se využívá pokud očekávám výstup o jedné hodnotě
+- Scalar nepoužijeme pokud chceme např. výběr všech sloupců z tabulky
 
-### Úkol č. 5:
+#### Group By
+Agregační funkce se dají kombinovat s klauzulí GROUP BY pro seskupení dat a výpočet agregací pro každou skupinu:
+````
+session = Session()
+
+# Výpočet průměrného platu pro každé oddělení
+vysledky = session.query(Zamestnanec.oddeleni, func.avg(Zamestnanec.plat)).group_by(Zamestnanec.oddeleni).all()
+session.commit()
+````
+Výpis výsledků:
+````
+for radek in vysledky:
+    print(f"Oddělení: {radek.oddeleni}")
+    print(f"Průměrný plat: {radek.avg_plat}")
+````
+
+#### Filtrování agregovaných hodnot
+
+Agregované výsledky se dají dále filtrovat s WHERE(filter) klauzulí.
+
+Výpočet průměrného platu pro zaměstnance s platem nad 50 000:
+````
+session = Session()
+
+prumerny_plat = session.query(func.avg(Zamestnanec.plat)).filter(Zamestnanec.plat > 50000).scalar()
+session.commit()
+````
+Výpis výsledku:
+````
+print(f"Průměrný plat pro zaměstnance s platem nad 50 000: {prumerny_plat}")
+````
+### 1. Úkol:
+- Spočítat součet všech úvěru (LoanUnpayed)
+- Spočítat počet 'Hypo' úvěrů (LoanUnpayed)
+- Najít minimální balanci z účtů (Accounts)
+- Najít maximální balanci z účtů (Accounts)
+- Spočítat průměrnou výši úvěru (LoanUnpayed)
+
+Řešení:
+````
+soucet_uveru = session.query(func.sum(LoanUnpayed.instalment)).scalar()
+pocet_hypo = session.query(func.count(LoanUnpayed.instalment)).filter(LoanUnpayed.loan_type == 'HYPO').scalar()
+min_balance = session.query(func.min(Account.acc_balance)).scalar()
+max_balance = session.query(func.max(Account.acc_balance)).scalar()
+avg_uver = session.query(func.avg(LoanUnpayed.instalment)).scalar()
+````
+Výpis:
+````
+print(f"Celkový součet úverů je: {soucet_uveru}Kč")
+print(f"Celkový počet HYPO úvěrů je: {pocet_hypo}")
+print(f"Minimální balance je: {min_balance}Kč")
+print(f"Maximální balance je: {max_balance}Kč")
+print(f"Průměrná výše úvěru je: {avg_uver}Kč")
+````
+
+### Spojování tabulek
+Spojování tabulek (Joins) umožňuje kombinovat data z více tabulek v databázi do jediné tabulky.
+- Dnes si vysvětlíme tři základní joiny
+````
+from sqlalchemy import join
+````
+#### Inner Join
+Vrátí záznamy, které existují v obou tabulkách.
+````
+session = Session()
+vysledky = session.query(Osoba, Adresa).join(Adresa, Osoba.adresa_id == Adresa.id).all()
+session.commit()
+````
+Výpis:
+````
+for osoba, adresa in vysledky:
+    print(f"{osoba.jmeno} - {adresa.ulice}, {adresa.mesto}")
+````
+#### Left Join
+Vrátí všechny záznamy z levé tabulky a odpovídající záznamy z pravé tabulky (i když v pravé tabulce neexistují).
+````
+session = Session()
+vysledky = session.query(Osoba).outerjoin(Adresa, Osoba.adresa_id == Adresa.id).all()
+session.commit()
+````
+Výpis:
+````
+for osoba in vysledky:
+    if osoba.adresa:
+        print(f"{osoba.jmeno} - {adresa.ulice}, {adresa.mesto}")
+    else:
+        print(f"{osoba.jmeno} - nemá adresu")
+````
+#### Right Join
+Vrátí všechny záznamy z pravé tabulky a odpovídající záznamy z levé tabulky (i když v levé tabulce neexistují).
+````
+session = Session()
+vysledky = session.query(Adresa).outerjoin(Osoba, Osoba.adresa_id == Adresa.id).all()
+session.commit()
+````
+Výpis:
+````
+for adresa in vysledky:
+    if adresa.osoba:
+        print(f"{adresa.ulice}, {adresa.mesto} - {osoba.jmeno}")
+    else:
+        print(f"{adresa.ulice}, {adresa.mesto} - neobsazeno")
+````
+
+### 2. Úkol:
+- Vytvořte všechny joiny, které jsme si zde představili nad tabulkami 'Customer' a 'CustomerAdress'
+Řešení:
+````
+vysledky_inner = session.query(Customer, CustomerAddress).join(CustomerAddress, Customer.customer_id == CustomerAddress.customer_id).all()
+vysledky_left = session.query(Customer).outerjoin(CustomerAddress, Customer.customer_id == CustomerAddress.customer_id).all()
+vysledky_right = session.query(CustomerAddress).outerjoin(Customer, Customer.customer_id == CustomerAddress.customer_id).all()
+````
+Výpis:
+````
+for zakaznik, adresa in vysledky_inner:
+    print(f"{zakaznik.name} - {adresa.street}, {adresa.city}")
+    
+print()
+
+for zakaznik in vysledky_left:
+    adresy = zakaznik.addresses
+
+    if adresy:
+        for adresa in adresy:
+            print(f"{zakaznik.name} - {adresa.street}, {adresa.city}")
+    else:
+        print(f"{zakaznik.name} - nemá adresu")
+        
+print()
+
+for kontakt in vysledky_right:
+    zakaznik = kontakt.customer
+    kontakty = zakaznik.contacts
+
+    if kontakty:
+        for k in kontakty:
+            print(f"{zakaznik.name} - {k.email}, {k.phone}")
+    else:
+        print(f"{zakaznik.name} - nemá kontakt")
+````
+
+### Vytvoření cache
+Pro lepší výkonnost je možné využívat cachce - Malá, ale velice rychlá paměť
+````
+from werkzeug.utils import cached_property
+````
+````
+class Osoba(Base):
+    ...
+
+    @cached_property
+    def plne_jmeno(self):
+        return f"{self.jmeno} {self.prijmeni}"
+
+session = Session()
+
+osoba = session.query(Osoba).filter(Osoba.id == 1).first()
+session.close()
+````
+Výpis:
+````
+print(osoba.plne_jmeno)
+````
+### 3. Úkol:
+- Vytvořte pro tabulku 'Customer' cache pro jméno a příjmení
+Řešení:
+````
+class Customer(Base):
+    __tablename__ = 'customer'
+
+    customer_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(25), nullable=False)
+    surname = Column(String(46), nullable=False)
+    active_flag = Column(Enum('Y', 'N'), nullable=False, default='Y', server_default='Y')
+    
+    __table_args__ = (
+        UniqueConstraint('customer_id', name='customer_id_UNIQUE'),
+    )
+    @cached_property
+    def full_name(self):
+        return f"{self.name} {self.surname}"
+````
+Výpis:
+````
+zakaznik = session.query(Customer).filter(Customer.customer_id == 1).first()
+print(zakaznik.full_name)
+````
+## 3. Část
+
+### 1. Dotazy a analýzy:
+- Vypište všechny zákazníky a jejich zůstatky na účtech.
+- Vypočítejte celkový zůstatek na všech účtech.
+- Vyhledejte nezaplacené půjčky a připojte k nim jména zákazníků
+- Sestavte přehled počtu zákazníků a bankovních uživatelů v jednotlivých městech.
+
+### 2. Úpravy a aktualizace:
+- Přidejte nového zákazníka s účtem a kontaktními údaji.
+- Změňte adresu jednoho z bankovních uživatelů.
+- Aktualizujte stav půjčky z "Nezaplaceno" na "Splaceno" (Y/N).
+- Deaktivujte účet zákazníka, který si přeje ukončit spolupráci.
+
+### 3. Experimenty s funkcionalitami:
+- Vytvořte příkaz, který zobrazí detailní informace o konkrétním účtu.
+- Vytvořte příkaz pro vyhledávání zákazníků podle jména nebo příjmení.
+- Vytvořte report, který zobrazí přehled zůstatků na účtech seřazený sestupně.
+- Vytvořte příkaz pro simulaci výběru hotovosti z účtu.
+
+### 4. Opravy a kontroly:
+- Vyhledejte a opravte chybné nebo nekonzistentní údaje v databázi (např. neodpovídající sumy).
+
