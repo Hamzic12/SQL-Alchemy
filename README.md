@@ -1337,7 +1337,7 @@ Výpis:
 ````
 print(osoba.plne_jmeno)
 ````
-### Úkol č. 3:
+### 3. Úkol:
 - Vytvořte pro tabulku 'Customer' cache pro jméno a příjmení
 Řešení:
 ````
