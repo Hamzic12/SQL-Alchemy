@@ -1206,8 +1206,28 @@ Výpis výsledku:
 print(f"Průměrný plat pro zaměstnance s platem nad 50 000: {prumerny_plat}")
 ````
 ### Úkol č. 1:
+- Spočítat součet všech úvěru (LoanUnpayed)
+- Spočítat počet 'Hypo' úvěrů (LoanUnpayed)
+- Najít minimální balanci z účtů (Accounts)
+- Najít maximální balanci z účtů (Accounts)
+- Spočítat průměrnou výši úvěru (LoanUnpayed)
 
-
+Řešení:
+````
+soucet_uveru = session.query(func.sum(LoanUnpayed.instalment)).scalar()
+pocet_hypo = session.query(func.count(LoanUnpayed.instalment)).filter(LoanUnpayed.loan_type == 'HYPO').scalar()
+min_balance = session.query(func.min(Account.acc_balance)).scalar()
+max_balance = session.query(func.max(Account.acc_balance)).scalar()
+avg_uver = session.query(func.avg(LoanUnpayed.instalment)).scalar()
+````
+Výpis:
+````
+print(f"Celkový součet úverů je: {soucet_uveru}Kč")
+print(f"Celkový počet HYPO úvěrů je: {pocet_hypo}")
+print(f"Minimální balance je: {min_balance}Kč")
+print(f"Maximální balance je: {max_balance}Kč")
+print(f"Průměrná výše úvěru je: {avg_uver}Kč")
+````
 ### Úkol č. 2:
 
 ### Úkol č. 3:
