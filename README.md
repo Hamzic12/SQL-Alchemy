@@ -1192,7 +1192,7 @@ for radek in vysledky:
 
 #### Filtrování agregovaných hodnot
 
-Agregované výsledky se dají dále filtrovat s WHERE klauzulí.
+Agregované výsledky se dají dále filtrovat s WHERE(filter) klauzulí.
 
 Výpočet průměrného platu pro zaměstnance s platem nad 50 000:
 ````
@@ -1228,6 +1228,56 @@ print(f"Minimální balance je: {min_balance}Kč")
 print(f"Maximální balance je: {max_balance}Kč")
 print(f"Průměrná výše úvěru je: {avg_uver}Kč")
 ````
+
+### Spojování tabulek
+Spojování tabulek (Joins) umožňuje kombinovat data z více tabulek v databázi do jediné tabulky.
+- Dnes si vysvětlíme tři základní joiny
+````
+from sqlalchemy import join
+````
+#### Inner Join
+Vrátí záznamy, které existují v obou tabulkách.
+````
+session = Session()
+vysledky = session.query(Osoba, Adresa).join(Adresa, Osoba.adresa_id == Adresa.id).all()
+session.commit()
+````
+Výpis:
+````
+for osoba, adresa in vysledky:
+    print(f"{osoba.jmeno} - {adresa.ulice}, {adresa.mesto}")
+````
+#### Left Join
+Vrátí všechny záznamy z levé tabulky a odpovídající záznamy z pravé tabulky (i když v pravé tabulce neexistují).
+````
+session = Session()
+vysledky = session.query(Osoba).outerjoin(Adresa, Osoba.adresa_id == Adresa.id).all()
+session.commit()
+````
+Výpis:
+````
+for osoba in vysledky:
+    if osoba.adresa:
+        print(f"{osoba.jmeno} - {adresa.ulice}, {adresa.mesto}")
+    else:
+        print(f"{osoba.jmeno} - nemá adresu")
+````
+#### Right Join
+Vrátí všechny záznamy z pravé tabulky a odpovídající záznamy z levé tabulky (i když v levé tabulce neexistují).
+````
+session = Session()
+vysledky = session.query(Adresa).outerjoin(Osoba, Osoba.adresa_id == Adresa.id).all()
+session.commit()
+````
+Výpis:
+````
+for adresa in vysledky:
+    if adresa.osoba:
+        print(f"{adresa.ulice}, {adresa.mesto} - {osoba.jmeno}")
+    else:
+        print(f"{adresa.ulice}, {adresa.mesto} - neobsazeno")
+````
+
 ### Úkol č. 2:
 
 ### Úkol č. 3:
