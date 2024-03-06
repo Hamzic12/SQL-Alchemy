@@ -267,10 +267,8 @@ def create_tables():
 create_tables()
 ````
 ### Vkládání záznamů do tabulky
-- Ukážeme si dva způsoby, jak přidávat záznamy do tabulky pomocí SQLAlchemy
-#### SQLAlchemy.orm
-- Můžeme použít objekt ORM (Object-Relational Mapping) k vytváření a vkládání nových záznamů do tabulky
-- Je jednodušší na používání, bezpečnost a přístupnost 
+- Při vkládání dat do tabulky, je důležité znát typy sloupců a jejich omezení
+	   
 ````
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -290,18 +288,6 @@ session.add(novy_zakaznik)
 
 # Potvrzení změn (provedení commitu)
 session.commit()
-````
-#### Raw SQL
-- Druhým způsobem je využití tzv. 'Raw SQL'
-- Může být v některých případech efektivnější nebo vhodnější, zejména při provádění jednoduchých operací nebo při optimalizaci výkonu
-````
-from sqlalchemy import create_engine
-
-engine = create_engine('sqlite:///:memory:')
-conn = engine.connect()
-
-# Příklad pro tabulku Zakaznik
-conn.execute("INSERT INTO zakaznik (jmeno, prijmeni) VALUES ('John', 'Doe')")
 ````
 ### 3. Úkol
 - Přidejte 5 záznamů do:
