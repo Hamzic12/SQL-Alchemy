@@ -23,7 +23,7 @@ pip install flask
 ````
 Base = declarative_base()
 ````
-- funkce používaná k vytvoření základní třídy, která slouží jako základ pro vytváření deklarativních tříd mapujících objekty na databázové tabulky
+Funkce používaná k vytvoření základní třídy, která slouží jako základ pro vytváření deklarativních tříd mapujících objekty na databázové tabulky
 
 ### Tabulka
 class MyTable(Base):
@@ -36,7 +36,7 @@ class MyTable(Base):
 	__tablename__ = 'my_table'
 	id = Column(Integer, primary_key=True, autoincrement=True)
 ````
-- Primární klíč definuje hlavní a jedinečný identifikátor tabulky
+Primární klíč definuje hlavní a jedinečný identifikátor tabulky
 
 ### Text
 ````
@@ -54,7 +54,7 @@ class MyTable(Base):
 	text = Column(String(255))
 	birthdate = Column(Date)
 ````
-- V SQLAlchemy se sloupec typu Date formátuje podle databázového systému nebo backendu
+V SQLAlchemy se sloupec typu Date formátuje podle databázového systému nebo backendu
 	- SQLite obvykle ukládá datum ve formátu 'YYYY-MM-DD'.
 	- MySQL používá formát 'YYYY-MM-DD'.
 	- PostgreSQL obvykle používá formát 'YYYY-MM-DD'.
@@ -70,9 +70,9 @@ class MyTable(Base):
 	birthdate = Column(Date)
 	created_at = Column(DateTime(timezone=True))
 ````
-- DateTime sloupec v SQLAlchemy reprezentuje časový okamžik obsahující datum a čas a může být používán k ukládání hodnoty s informacemi o datumu a čase
-- Formát je definován dle backendu
-- 'timezone' -> Tento parametr umožňuje specifikovat, zda chcete pracovat s časy v lokálním časovém pásmu (True), v UTC (False), nebo se chcete postavit na svou vlastní správu časových pásem (tzinfo objekt).
+DateTime sloupec v SQLAlchemy reprezentuje časový okamžik obsahující datum a čas a může být používán k ukládání hodnoty s informacemi o datumu a čase
+Formát je definován dle backendu
+'timezone' -> Tento parametr umožňuje specifikovat, zda chcete pracovat s časy v lokálním časovém pásmu (True), v UTC (False), nebo se chcete postavit na svou vlastní správu časových pásem (tzinfo objekt).
 
 ### Defaultní hodnota
 ````
@@ -83,7 +83,7 @@ class MyTable(Base):
 	birthdate = Column(Date)
 	created_at = Column(DateTime(timezone=True), server_default=func.now())
 ````
-- V tomto případě jsme využili funkce, která nastaví defaultní hodnotu jako aktuální datum a čas
+V tomto případě jsme využili funkce, která nastaví defaultní hodnotu jako aktuální datum a čas
 
 ### Nastavení relace
 ````
@@ -100,8 +100,8 @@ class SecondTable(Base):
     id = Column(Integer, primary_key=True)
     first_table_id = Column(Integer, ForeignKey('first_table.id'))
 ````
-- Cizí klíč je identifikátor tabulky, který definuje relaci
-- POZOR: Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
+Cizí klíč je identifikátor tabulky, který definuje relaci
+POZOR: Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
 ### 1. Úkol
 Vytvořte databázi se třemi tabulkami o zákazníkovi:
 - zakaznik
@@ -267,7 +267,7 @@ def create_tables():
 create_tables()
 ````
 ### Vkládání záznamů do tabulky
-- Při vkládání dat do tabulky, je důležité znát typy sloupců a jejich omezení
+Při vkládání dat do tabulky, je důležité znát typy sloupců a jejich omezení
 	   
 ````
 from sqlalchemy import create_engine
@@ -290,7 +290,7 @@ session.add(novy_zakaznik)
 session.commit()
 ````
 ### 3. Úkol
-- Přidejte 5 záznamů do:
+Přidejte 5 záznamů do:
 	- 'zakaznik'
  	- 'zakaznik_kontakt'
 	- 'zakaznik_adresa'
@@ -387,51 +387,51 @@ for zakaznik in zakaznici:
     print()
 ````
 ### Selekce údajů z tabulky
-- Nejčastější úlohou při práci s databází je vytažení údajů z nějaké tabulky -> <b>Select</b>
-- V případě SQLAlchemy se využívá tato syntaxe
+Nejčastější úlohou při práci s databází je vytažení údajů z nějaké tabulky -> <b>Select</b>
+V případě SQLAlchemy se využívá tato syntaxe
 ````
 session = Session()
 result = session.query(Trida_tabulky).all()
 session.commit()
 ````
-- Výpis pak provedme takto:
+Výpis pak provedme takto:
 ````
 for row in result:
     print(row.sloupec1, row.sloupec2)
 ````
-- Filtrování v selectu se využívá pomocí <b>WHERE</b> podmínky
-- V SQLAlchemy vypadá syntaxe takto:
+Filtrování v selectu se využívá pomocí <b>WHERE</b> podmínky
+V SQLAlchemy vypadá syntaxe takto:
 ````
 session = Session()
 result = session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == hodnota).all()
 session.commit()
 ````
-- Výpis pak provedme takto:
+Výpis pak provedme takto:
 ````
 for row in result:
     print(row.sloupec1, row.sloupec2)
 ````
-- Důlěžitým prvkem může být také seřazení záznamů -> <b>Order By</b>
-- V SQLAlcehym vypadá syntaxe takto:
-- Pro <b>ASCENDING</b>:
+Důlěžitým prvkem může být také seřazení záznamů -> <b>Order By</b>
+V SQLAlcehym vypadá syntaxe takto:
+Pro <b>ASCENDING</b>:
 ````
 session = Session()
 result = session.query(Trida_tabulky).order_by(Trida_tabulky.sloupec.asc()).all()
 session.commit()
 ````
-- Pro <b>DESCENDING</b>:
+Pro <b>DESCENDING</b>:
 ````
 session = Session()
 result = session.query(Trida_tabulky).order_by(Trida_tabulky.sloupec.desc()).all()
 session.commit()
 ````
-- Výpis pak provedme takto:
+Výpis pak provedme takto:
 ````
 for row in result:
     print(row.sloupec1, row.sloupec2)
 ````
 ### 4. Úkol
-- Vytvořte z tabulky:
+Vytvořte z tabulky:
 	- 'zakaznik' -> select, který vybere vše a vypíše jméno a příjmení 
   	- 'zakaznik_adresa' -> select, který vybere pouze adresy trvalého bydliště a vypíše je
   	- 'zakaznik_kontakt' -> select, který vybere vše a vypíše emaily seřazené sestupně
@@ -519,7 +519,7 @@ result3 = session.query(ZakaznikContact).order_by(ZakaznikContact.email.desc()).
 
 session.commit()
 ````
-- Kontrola:
+Kontrola:
 ````
 for zakaznik in result:
     print(zakaznik.jmeno, zakaznik.prijmeni)
@@ -534,15 +534,15 @@ for zakaznik in result3:
 print()
 ````
 ### Odstranění záznamů
-- Někdy je potřeba nějaké záznamy smazat
-- V SQLAlchemy vypadá syntaxe takto:
+Někdy je potřeba nějaké záznamy smazat
+V SQLAlchemy vypadá syntaxe takto:
 ````
 session = Session()
 session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == hodnota).delete()
 session.commit()
 ````
 ### Úkol 5
-- Smažte z tabulky 'zakaznik_adresa' všechny adresy, které nejsou trvalé
+Smažte z tabulky 'zakaznik_adresa' všechny adresy, které nejsou trvalé
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -623,7 +623,7 @@ session = Session()
 session.query(ZakaznikAdress).filter(ZakaznikAdress.trvale_bydliste == 'N').delete()
 session.commit()
 ````
-- Kontrola:
+Kontrola:
 ````
 session = Session()
 result1 = session.query(ZakaznikAdress).all()
@@ -634,8 +634,8 @@ for zakaznik in result1:
 print()
 ````
 ### Updatování hodnot
-- Pro některé úkony je třeba aktualizovat hodnoty
-- Slouží pro to syntaxe:
+Pro některé úkony je třeba aktualizovat hodnoty
+Slouží pro to syntaxe:
 
 ````
 session = Session()
@@ -643,7 +643,7 @@ session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == 'hodnota').update({
 session.commit()
 ````
 ### 6. Úkol
-- Uprave sloupec 'ulice' v tabulce 'zakaznik_adresa':
+Uprave sloupec 'ulice' v tabulce 'zakaznik_adresa':
 	- Pokud je město 'Cityville' -> ulice bude 'Nová ulice'
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
@@ -726,7 +726,7 @@ session = Session()
 session.query(ZakaznikAdress).filter(ZakaznikAdress.mesto == 'Cityville').update({"ulice": 'Nová ulice'})
 session.commit()
 ````
-- Kontrola:
+Kontrola:
 ````
 session = Session()
 result1 = session.query(ZakaznikAdress).all()
