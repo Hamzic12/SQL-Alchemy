@@ -21,6 +21,7 @@ pip install flask
 ### Tvorba databáze
 
 ### <b>Základy</b>
+
 ````
 from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
 from sqlalchemy.orm import relationship, declarative_base
@@ -28,6 +29,7 @@ from sqlalchemy.orm import relationship, declarative_base
 ````
 engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
 ````
+
 Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
 - dialect = druh databáze
 - driver = DBAPI
@@ -899,21 +901,52 @@ Pro využití funkcí je potřeba importovat 'func':
 from sqlalchemy import func
 ````
 
+Příklad použití:
+````
 session = Session()
 prumerny_plat = session.query(func.avg(Zamestnanec.plat)).scalar()
 pocet_zamestnancu = session.query(func.count(Zamestnanec.id)).scalar()
+session.commit()
 ````
 Výpis výsledků:
 ````
 print(f"Průměrný plat: {prumerny_plat}")
 print(f"Počet zaměstnanců: {pocet_zamestnancu}")
 ````
+
 Proč .scalar?
 - Scalar se využívá pokud očekávám výstup o jedné hodnotě
 - Scalar nepoužijeme pokud chceme např. výběr všech sloupců z tabulky
 
-V případě, že chceme 
+#### Group By
+Agregační funkce se dají kombinovat s klauzulí GROUP BY pro seskupení dat a výpočet agregací pro každou skupinu:
+````
+session = Session()
 
+# Výpočet průměrného platu pro každé oddělení
+vysledky = session.query(Zamestnanec.oddeleni, func.avg(Zamestnanec.plat)).group_by(Zamestnanec.oddeleni).all()
+session.commit()
+````
+Výpis výsledků:
+````
+for radek in vysledky:
+    print(f"Oddělení: {radek.oddeleni}")
+    print(f"Průměrný plat: {radek.avg_plat}")
+````
+
+#### Filtrování agregovaných hodnot
+
+Agregované výsledky se dají dále filtrovat s WHERE klauzulí.
+
+Výpočet průměrného platu pro zaměstnance s platem nad 50 000:
+````
+session = Session()
+
+prumerny_plat = session.query(func.avg(Zamestnanec.plat)).filter(Zamestnanec.plat > 50000).scalar()
+session.commit()
+````
+Výpis výsledku:
+print(f"Průměrný plat pro zaměstnance s platem nad 50 000: {prumerny_plat}")
 ### Úkol č. 1:
 
 ### Úkol č. 2:
