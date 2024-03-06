@@ -386,6 +386,22 @@ for zakaznik in zakaznici:
         print(f"  Ulice: {adresa.ulice}, Město: {adresa.mesto}, PSČ: {adresa.psc}, Trvalé bydliště: {adresa.trvale_bydliste}")
     print()
 ````
+### Selekce údajů z tabulky
+- Nejčastější úlohou při práci s databází je vytažení údajů z nějaké tabulky -> <b>Select</b>
+- V případě SQLAlchemy se využívá tato syntaxe
+````
+session = Session()
+result = session.query(Trida_tabulky).all()
+session.commit()
+````
+- Výpis pak provedme takto:
+````
+session = Session()
+for row in result:
+    print(row.jmeno, row.prijmeni)
+session.commit()
+````
+### 4. Úkol
 ## 2. Část
 ### Databáze
 Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry
