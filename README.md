@@ -435,6 +435,31 @@ for row in result:
 	- 'zakaznik' -> select, který vybere vše a vypíše jméno a příjmení 
   	- 'zakaznik_adresa' -> select, který vybere pouze adresy trvalého bydliště a vypíše je
   	- 'zakaznik_kontakt' -> select, který vybere vše a vypíše emaily seřazené sestupně
+````
+session = Session()
+
+result = session.query(Zakaznik).all()
+result2 = session.query(ZakaznikAdress).filter(ZakaznikAdress.trvale_bydliste == 'Y').all()
+result3 = session.query(ZakaznikContact).order_by(ZakaznikContact.email.desc()).all()
+
+session.commit()
+````
+- Kontrola:
+````
+for zakaznik in result:
+    print(zakaznik.jmeno, zakaznik.prijmeni)
+print()
+session = Session()
+
+for zakaznik in result2:
+    print(zakaznik.mesto, zakaznik.psc)
+print()
+session = Session()
+
+for zakaznik in result3:
+    print(zakaznik.email, zakaznik.telefon)
+print()
+````
 ## 2. Část
 ### Databáze
 Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry
