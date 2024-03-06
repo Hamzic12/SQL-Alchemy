@@ -1205,7 +1205,7 @@ Výpis výsledku:
 ````
 print(f"Průměrný plat pro zaměstnance s platem nad 50 000: {prumerny_plat}")
 ````
-### Úkol č. 1:
+### 1. Úkol:
 - Spočítat součet všech úvěru (LoanUnpayed)
 - Spočítat počet 'Hypo' úvěrů (LoanUnpayed)
 - Najít minimální balanci z účtů (Accounts)
@@ -1278,7 +1278,7 @@ for adresa in vysledky:
         print(f"{adresa.ulice}, {adresa.mesto} - neobsazeno")
 ````
 
-### Úkol č. 2:
+### 2. Úkol:
 - Vytvořte všechny joiny, které jsme si zde představili nad tabulkami 'Customer' a 'CustomerAdress'
 Řešení:
 ````
