@@ -55,11 +55,11 @@ class MyTable(Base):
 	birthdate = Column(Date)
 ````
 V SQLAlchemy se sloupec typu Date formátuje podle databázového systému nebo backendu
-	- SQLite obvykle ukládá datum ve formátu 'YYYY-MM-DD'.
-	- MySQL používá formát 'YYYY-MM-DD'.
-	- PostgreSQL obvykle používá formát 'YYYY-MM-DD'.
-	- Oracle může používat odlišný formát, například 'DD-MON-YYYY'.
-	- SQL Server používá formát 'YYYY-MM-DD'.
+- SQLite obvykle ukládá datum ve formátu 'YYYY-MM-DD'.
+- MySQL používá formát 'YYYY-MM-DD'.
+- PostgreSQL obvykle používá formát 'YYYY-MM-DD'.
+- Oracle může používat odlišný formát, například 'DD-MON-YYYY'.
+- SQL Server používá formát 'YYYY-MM-DD'.
 
 ### DateTime
 ````
@@ -70,9 +70,9 @@ class MyTable(Base):
 	birthdate = Column(Date)
 	created_at = Column(DateTime(timezone=True))
 ````
-DateTime sloupec v SQLAlchemy reprezentuje časový okamžik obsahující datum a čas a může být používán k ukládání hodnoty s informacemi o datumu a čase
-Formát je definován dle backendu
-'timezone' -> Tento parametr umožňuje specifikovat, zda chcete pracovat s časy v lokálním časovém pásmu (True), v UTC (False), nebo se chcete postavit na svou vlastní správu časových pásem (tzinfo objekt).
+- DateTime sloupec v SQLAlchemy reprezentuje časový okamžik obsahující datum a čas a může být používán k ukládání hodnoty s informacemi o datumu a čase
+- Formát je definován dle backendu
+- 'timezone' -> Tento parametr umožňuje specifikovat, zda chcete pracovat s časy v lokálním časovém pásmu (True), v UTC (False), nebo se chcete postavit na svou vlastní správu časových pásem (tzinfo objekt).
 
 ### Defaultní hodnota
 ````
@@ -101,7 +101,7 @@ class SecondTable(Base):
     first_table_id = Column(Integer, ForeignKey('first_table.id'))
 ````
 Cizí klíč je identifikátor tabulky, který definuje relaci
-POZOR: Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
+- POZOR: Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
 ### 1. Úkol
 Vytvořte databázi se třemi tabulkami o zákazníkovi:
 - zakaznik
@@ -388,7 +388,7 @@ for zakaznik in zakaznici:
 ````
 ### Selekce údajů z tabulky
 Nejčastější úlohou při práci s databází je vytažení údajů z nějaké tabulky -> <b>Select</b>
-V případě SQLAlchemy se využívá tato syntaxe
+- V případě SQLAlchemy se využívá tato syntaxe
 ````
 session = Session()
 result = session.query(Trida_tabulky).all()
@@ -412,14 +412,14 @@ for row in result:
     print(row.sloupec1, row.sloupec2)
 ````
 Důlěžitým prvkem může být také seřazení záznamů -> <b>Order By</b>
-V SQLAlcehym vypadá syntaxe takto:
-Pro <b>ASCENDING</b>:
+- V SQLAlcehym vypadá syntaxe takto:
+- Pro <b>ASCENDING</b>:
 ````
 session = Session()
 result = session.query(Trida_tabulky).order_by(Trida_tabulky.sloupec.asc()).all()
 session.commit()
 ````
-Pro <b>DESCENDING</b>:
+- Pro <b>DESCENDING</b>:
 ````
 session = Session()
 result = session.query(Trida_tabulky).order_by(Trida_tabulky.sloupec.desc()).all()
@@ -432,9 +432,9 @@ for row in result:
 ````
 ### 4. Úkol
 Vytvořte z tabulky:
-	- 'zakaznik' -> select, který vybere vše a vypíše jméno a příjmení 
-  	- 'zakaznik_adresa' -> select, který vybere pouze adresy trvalého bydliště a vypíše je
-  	- 'zakaznik_kontakt' -> select, který vybere vše a vypíše emaily seřazené sestupně
+- 'zakaznik' -> select, který vybere vše a vypíše jméno a příjmení 
+- 'zakaznik_adresa' -> select, který vybere pouze adresy trvalého bydliště a vypíše je
+- 'zakaznik_kontakt' -> select, který vybere vše a vypíše emaily seřazené sestupně
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -535,7 +535,7 @@ print()
 ````
 ### Odstranění záznamů
 Někdy je potřeba nějaké záznamy smazat
-V SQLAlchemy vypadá syntaxe takto:
+- V SQLAlchemy vypadá syntaxe takto:
 ````
 session = Session()
 session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == hodnota).delete()
@@ -635,7 +635,7 @@ print()
 ````
 ### Updatování hodnot
 Pro některé úkony je třeba aktualizovat hodnoty
-Slouží pro to syntaxe:
+- Slouží pro to syntaxe:
 
 ````
 session = Session()
@@ -644,7 +644,7 @@ session.commit()
 ````
 ### 6. Úkol
 Uprave sloupec 'ulice' v tabulce 'zakaznik_adresa':
-	- Pokud je město 'Cityville' -> ulice bude 'Nová ulice'
+- Pokud je město 'Cityville' -> ulice bude 'Nová ulice'
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
