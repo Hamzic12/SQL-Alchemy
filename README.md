@@ -847,10 +847,8 @@ Base.metadata.create_all(engine)
 ````
 
 ### Úkol č. 1:
-Vytvořte databázi s třemi tabulkami zákzaníkovi(tabulka1=id, jméno, příjmení | tabulka2=id, telefon, email | tabulka3=id, ulice, mesto, psc).
 
 ### Úkol č. 2:
-Vytvořte funkci, ktera najde kolik zákazníku bydlí na vámi vybrané PSČ. 
 
 ### Úkol č. 3:
 
