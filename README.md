@@ -431,6 +431,10 @@ for row in result:
     print(row.sloupec1, row.sloupec2)
 ````
 ### 4. Úkol
+- Vytvořte z tabulky:
+	- 'zakaznik' -> select, který vybere vše a vypíše jméno a příjmení 
+  	- 'zakaznik_adresa' -> select, který vybere pouze adresy trvalého bydliště a vypíše je
+  	- 'zakaznik_kontakt' -> select, který vybere vše a vypíše emaily seřazené sestupně
 ## 2. Část
 ### Databáze
 Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry
