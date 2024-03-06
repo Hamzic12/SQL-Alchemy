@@ -1202,6 +1202,7 @@ prumerny_plat = session.query(func.avg(Zamestnanec.plat)).filter(Zamestnanec.pla
 session.commit()
 ````
 Výpis výsledku:
+````
 print(f"Průměrný plat pro zaměstnance s platem nad 50 000: {prumerny_plat}")
 ````
 ### Úkol č. 1:
