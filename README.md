@@ -19,6 +19,20 @@ pip install flask
 ````
 ## 1. Část
 ### Tvorba databáze
+
+### <b>Základy</b>
+Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
+- dialect = druh databáze
+- driver = DBAPI
+- username = uživatelské jméno
+- password = heslo
+- host = Vetšinou to bývá Ip adresa
+- port = jaký port
+- database = jakou databázi
+````
+engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
+````
+
 ### Base
 ````
 Base = declarative_base()
@@ -86,6 +100,7 @@ class MyTable(Base):
 V tomto případě jsme využili funkce, která nastaví defaultní hodnotu jako aktuální datum a čas
 
 ### Nastavení relace
+1:N
 ````
 class FirstTable(Base):
 	__tablename__ = 'first_table'
@@ -99,6 +114,49 @@ class SecondTable(Base):
     __tablename__ = 'second_table'
     id = Column(Integer, primary_key=True)
     first_table_id = Column(Integer, ForeignKey('first_table.id'))
+````
+1:1
+````
+class Osoba(Base):
+    __tablename__ = "osoba"
+    
+    id = Column(Integer, primary_key=True)
+    jmeno = Column(String(255))
+    
+    rodny_list_id = Column(Integer, ForeignKey("rodny_list.id"))
+    rodny_list = relationship("RodnyList", uselist=False)
+
+class RodnyList(Base):
+    __tablename__ = "rodny_list"
+    
+    id = Column(Integer, primary_key=True)
+    cislo = Column(String(10))
+    osoba_id = Column(Integer, ForeignKey("osoba.id"))
+````
+M:N
+````
+class Osoba(Base):
+    __tablename__ = "osoba"
+    
+    id = Column(Integer, primary_key=True)
+    jmeno = Column(String(255))
+    
+    konicky = relationship("Konicek", secondary="osoba_konicek")
+
+class Konicek(Base):
+    __tablename__ = "konicek"
+    
+    id = Column(Integer, primary_key=True)
+    nazev = Column(String(255))
+    
+    osoby = relationship("Osoba", secondary="osoba_konicek")
+
+osoba_konicek = Table(
+    "osoba_konicek",
+    Base.metadata,
+    Column("osoba_id", Integer, ForeignKey("osoba.id")),
+    Column("konicek_id", Integer, ForeignKey("konicek.id")),
+)
 ````
 Cizí klíč je identifikátor tabulky, který definuje relaci
 - POZOR: Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
@@ -123,6 +181,17 @@ Vytvořte databázi se třemi tabulkami o zákazníkovi:
 from sqlalchemy import Column, Integer, String, DateTime, Enum, MetaData, func, create_engine, inspect
 from sqlalchemy.orm import relationship, declarative_base
 ````
+Vytvoření databáze a tabulek:
+````
+engine = create_engine('sqlite:///:memory:', echo=False)
+
+# Vytvoření schématu (metadata) pro tabulky
+metadata = MetaData()
+
+# Vytvoření tabulek
+Base.metadata.create_all(engine)
+````
+Řešení:
 ````
 class Zakaznik(Base):
     __tablename__ = 'zakaznik'
@@ -188,6 +257,7 @@ Vytvořte relace mezi tabulkami o zákazníkovi:
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, MetaData, func, create_engine, inspect
 from sqlalchemy.orm import relationship, declarative_base
 ````
+Řešení:
 ````
 class Zakaznik(Base):
     __tablename__ = 'zakaznik'
@@ -294,6 +364,7 @@ Přidejte 5 záznamů do:
 	- 'zakaznik'
  	- 'zakaznik_kontakt'
 	- 'zakaznik_adresa'
+Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -435,6 +506,8 @@ Vytvořte z tabulky:
 - 'zakaznik' -> select, který vybere vše a vypíše jméno a příjmení 
 - 'zakaznik_adresa' -> select, který vybere pouze adresy trvalého bydliště a vypíše je
 - 'zakaznik_kontakt' -> select, který vybere vše a vypíše emaily seřazené sestupně
+
+Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -543,6 +616,8 @@ session.commit()
 ````
 ### Úkol 5
 Smažte z tabulky 'zakaznik_adresa' všechny adresy, které nejsou trvalé
+
+Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -643,8 +718,10 @@ session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == 'hodnota').update({
 session.commit()
 ````
 ### 6. Úkol
-Uprave sloupec 'ulice' v tabulce 'zakaznik_adresa':
+Upravte sloupec 'ulice' v tabulce 'zakaznik_adresa':
 - Pokud je město 'Cityville' -> ulice bude 'Nová ulice'
+
+Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
@@ -809,42 +886,32 @@ Tabulka splacených úverů
 - <i>instalment</i> = Výše úvěru
 - <i>account_id</i> = Identifikátor účtu
 
-### <b>Základy</b>
-Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
-- dialect = druh databáze
-- driver = DBAPI
-- username = uživatelské jméno
-- password = heslo
-- host = Vetšinou to bývá Ip adresa
-- port = jaký port
-- database = jakou databázi
+### Agregační funkce v SQLAlchemy
+- <b>sum()</b>: Součet hodnot v daném sloupci.
+- <b>avg()</b>: Průměr hodnot v daném sloupci.
+- <b>count()</b>: Počet záznamů v dané tabulce.
+- <b>min()</b>: Minimum hodnot v daném sloupci.
+- <b>max()</b>: Maximum hodnot v daném sloupci.
+
+Pro využití funkcí je potřeba importovat 'func':
 ````
-engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
+from sqlalchemy import func
 ````
 
-declarative_base slouží k vytváření modelů.
+session = Session()
+prumerny_plat = session.query(func.avg(Zamestnanec.plat)).scalar()
+pocet_zamestnancu = session.query(func.count(Zamestnanec.id)).scalar()
 ````
-Base = declarative_base()
+Výpis výsledků:
 ````
+print(f"Průměrný plat: {prumerny_plat}")
+print(f"Počet zaměstnanců: {pocet_zamestnancu}")
+````
+Proč .scalar?
+- Scalar se využívá pokud očekávám výstup o jedné hodnotě
+- Scalar nepoužijeme pokud chceme např. výběr všech sloupců z tabulky
 
-Tabulka, je třída, která dědí z objektu Base.
-````
-class Table1(Base):
-    __tablename__ = 'Tabel1'
-
-    id = Column(Integer, primary_key=True, nullable=False)
-    column1 = Column(String)
-    column2 = Column(Integer)
-    column3 = Column(Date)
-    
-    table2_id = relationship(Integer, foreign_keys='Table2.id') #one to many
-    #one to many
-````
-
-A nakonec k vytvořeni databáze a všechny tabulky.
-````
-Base.metadata.create_all(engine)
-````
+V případě, že chceme 
 
 ### Úkol č. 1:
 
