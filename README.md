@@ -21,7 +21,7 @@ from sqlalchemy.orm import relationship, declarative_base
 engine = create_engine('<dialect>+<driver>://<username>:<password>@<host>:<port>/<database>', echo=True)
 ````
 
-Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jejiž obsahem je:
+Engine slouží k připojení k databázi a k průběhu SQL příkazů. Ve funkci create_engine je string parametr, jehož obsahem je:
 - dialect = druh databáze
 - driver = DBAPI
 - username = uživatelské jméno
@@ -34,7 +34,7 @@ Engine slouží k připojení k databazi a k průběhu SQL příkazů. Ve funkci
 ````
 Base = declarative_base()
 ````
-Funkce používaná k vytvoření základní třídy, která slouží jako základ pro vytváření deklarativních tříd mapujících objekty na databázové tabulky
+Funkce slouží k vytvoření abstraktní třídy, která slouží k jednotnému vytváření deklarativních tříd mapujících objekty na databázové tabulky.
 
 ### Tabulka
 class MyTable(Base):
@@ -47,7 +47,7 @@ class MyTable(Base):
 	__tablename__ = 'my_table'
 	id = Column(Integer, primary_key=True, autoincrement=True)
 ````
-Primární klíč definuje hlavní a jedinečný identifikátor tabulky
+Primární klíč definuje hlavní a jedinečný identifikátor tabulky.
 
 ### Text
 ````
@@ -65,7 +65,7 @@ class MyTable(Base):
 	text = Column(String(255))
 	birthdate = Column(Date)
 ````
-V SQLAlchemy se sloupec typu Date formátuje podle databázového systému nebo backendu
+V SQLAlchemy se sloupec typu Date formátuje podle databázového systému nebo backendu:
 - SQLite obvykle ukládá datum ve formátu 'YYYY-MM-DD'.
 - MySQL používá formát 'YYYY-MM-DD'.
 - PostgreSQL obvykle používá formát 'YYYY-MM-DD'.
@@ -81,11 +81,11 @@ class MyTable(Base):
 	birthdate = Column(Date)
 	created_at = Column(DateTime(timezone=True))
 ````
-- DateTime sloupec v SQLAlchemy reprezentuje časový okamžik obsahující datum a čas a může být používán k ukládání hodnoty s informacemi o datumu a čase
-- Formát je definován dle backendu
-- 'timezone' -> Tento parametr umožňuje specifikovat, zda chcete pracovat s časy v lokálním časovém pásmu (True), v UTC (False), nebo se chcete postavit na svou vlastní správu časových pásem (tzinfo objekt).
+- DateTime sloupec v SQLAlchemy reprezentuje časový okamžik obsahující datum a čas.
+- Formát je definován dle backendu.
+- Parametr `timezone` umožňuje specifikovat, zda chcete pracovat s časy v lokálním časovém pásmu (True), v UTC (False), nebo se chcete postavit na svou vlastní správu časových pásem (tzinfo objekt).
 
-### Defaultní hodnota
+### Výchozí hodnota
 ````
 class MyTable(Base):
 	__tablename__ = 'my_table'
@@ -94,9 +94,9 @@ class MyTable(Base):
 	birthdate = Column(Date)
 	created_at = Column(DateTime(timezone=True), server_default=func.now())
 ````
-V tomto případě jsme využili funkce, která nastaví defaultní hodnotu jako aktuální datum a čas
+V tomto případě jsme využili funkce, která nastaví výchozí hodnotu jako aktuální datum a čas.
 
-### Nastavení relace
+### Nastavení relací
 1:N
 ````
 class FirstTable(Base):
@@ -155,9 +155,9 @@ osoba_konicek = Table(
     Column("konicek_id", Integer, ForeignKey("konicek.id")),
 )
 ````
-Cizí klíč je identifikátor tabulky, který definuje relaci
-- POZOR: Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
-### 1. Úkol
+Cizí klíč je identifikátor tabulky, který definuje relaci.
+- **POZOR:** Do vztahu píšeme Třídu do uvozovek, ale do cizího klíče už ne!
+### 1.1 Úkol
 Vytvořte databázi se třemi tabulkami o zákazníkovi:
 - zakaznik
 	- Id
@@ -174,12 +174,16 @@ Vytvořte databázi se třemi tabulkami o zákazníkovi:
  	- Město
  	- PSČ
  	- Trvalé bydliště (Ano/Ne)
+````
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, MetaData, func, create_engine, inspect
+from sqlalchemy.orm import relationship, declarative_base
+````
 
 Vytvoření databáze a tabulek:
 ````
 engine = create_engine('sqlite:///:memory:', echo=False)
 
-# Vytvoření schématu (metadata) pro tabulky
+# Vytvoření schématu (metadat) pro tabulky
 metadata = MetaData()
 
 # Vytvoření tabulek
@@ -243,10 +247,10 @@ def create_tables():
 # Spuštění funkce
 create_tables()
 ````
-### 2. Úkol
+### 1.2 Úkol
 Vytvořte relace mezi tabulkami o zákazníkovi:
-- Vytvořte relaci v 'zakaznik'
-- Vytvořte cizí klíče pro tabulku 'zakaznik_adresa' a 'zakaznik_kontakt'
+- Vytvořte relaci v `zakaznik`.
+- Vytvořte cizí klíče pro tabulku `zakaznik_adresa` a `zakaznik_kontakt`.
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, MetaData, func, create_engine, inspect
 from sqlalchemy.orm import relationship, declarative_base
@@ -331,7 +335,7 @@ def create_tables():
 create_tables()
 ````
 ### Vkládání záznamů do tabulky
-Při vkládání dat do tabulky, je důležité znát typy sloupců a jejich omezení
+Při vkládání dat do tabulky je důležité znát typy sloupců a jejich omezení.
 	   
 ````
 from sqlalchemy import create_engine
@@ -353,11 +357,12 @@ session.add(novy_zakaznik)
 # Potvrzení změn (provedení commitu)
 session.commit()
 ````
-### 3. Úkol
+### 1.3 Úkol
 Přidejte 5 záznamů do:
-	- 'zakaznik'
- 	- 'zakaznik_kontakt'
-	- 'zakaznik_adresa'
+- `zakaznik`
+- `zakaznik_kontakt`
+- `zakaznik_adresa`
+
 Řešení:
 ````
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, func, create_engine
@@ -453,7 +458,7 @@ for zakaznik in zakaznici:
 ````
 ### Selekce údajů z tabulky
 Nejčastější úlohou při práci s databází je vytažení údajů z nějaké tabulky -> <b>Select</b>
-- V případě SQLAlchemy se využívá tato syntaxe
+- V případě SQLAlchemy se využívá tato syntaxe:
 ````
 session = Session()
 result = session.query(Trida_tabulky).all()
@@ -464,7 +469,8 @@ Výpis pak provedme takto:
 for row in result:
     print(row.sloupec1, row.sloupec2)
 ````
-Filtrování v selectu se využívá pomocí <b>WHERE</b> podmínky
+Filtrování v selectu se využívá pomocí <b>WHERE</b> podmínky.
+
 V SQLAlchemy vypadá syntaxe takto:
 ````
 session = Session()
@@ -477,7 +483,7 @@ for row in result:
     print(row.sloupec1, row.sloupec2)
 ````
 Důlěžitým prvkem může být také seřazení záznamů -> <b>Order By</b>
-- V SQLAlcehym vypadá syntaxe takto:
+- V SQLAlchemy vypadá syntaxe takto:
 - Pro <b>ASCENDING</b>:
 ````
 session = Session()
@@ -495,11 +501,11 @@ Výpis pak provedme takto:
 for row in result:
     print(row.sloupec1, row.sloupec2)
 ````
-### 4. Úkol
+### 1.4 Úkol
 Vytvořte z tabulky:
-- 'zakaznik' -> select, který vybere vše a vypíše jméno a příjmení 
-- 'zakaznik_adresa' -> select, který vybere pouze adresy trvalého bydliště a vypíše je
-- 'zakaznik_kontakt' -> select, který vybere vše a vypíše emaily seřazené sestupně
+- `zakaznik` -> select, který vybere vše a vypíše jméno a příjmení 
+- `zakaznik_adresa` -> select, který vybere pouze adresy trvalého bydliště a vypíše je
+- `zakaznik_kontakt` -> select, který vybere vše a vypíše emaily seřazené sestupně
 
 Řešení:
 ````
@@ -601,15 +607,15 @@ for zakaznik in result3:
 print()
 ````
 ### Odstranění záznamů
-Někdy je potřeba nějaké záznamy smazat
+Někdy je potřeba nějaké záznamy smazat.
 - V SQLAlchemy vypadá syntaxe takto:
 ````
 session = Session()
 session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == hodnota).delete()
 session.commit()
 ````
-### Úkol 5
-Smažte z tabulky 'zakaznik_adresa' všechny adresy, které nejsou trvalé
+### 1.5 Úkol
+Smažte z tabulky `zakaznik_adresa` všechny adresy, které nejsou trvalé.
 
 Řešení:
 ````
@@ -702,8 +708,8 @@ for zakaznik in result1:
     print(zakaznik.mesto, zakaznik.ulice)
 print()
 ````
-### Updatování hodnot
-Pro některé úkony je třeba aktualizovat hodnoty
+### Aktualizace hodnot
+Pro některé úkony je třeba aktualizovat hodnoty.
 - Slouží pro to syntaxe:
 
 ````
@@ -711,9 +717,9 @@ session = Session()
 session.query(Trida_tabulky).filter(Trida_tabulky.sloupec == 'hodnota').update({"měněný sloupec": 'Nová hodnota'})
 session.commit()
 ````
-### 6. Úkol
-Upravte sloupec 'ulice' v tabulce 'zakaznik_adresa':
-- Pokud je město 'Cityville' -> ulice bude 'Nová ulice'
+### 1.6 Úkol
+Upravte sloupec `ulice` v tabulce `zakaznik_adresa`:
+- Pokud je město **Cityville** -> ulice bude '``Nová ulice``'
 
 Řešení:
 ````
@@ -809,18 +815,18 @@ result1 = session.query(ZakaznikAdress).all()
 ````
 ## 2. Část
 ### Databáze
-Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry
+Naše databáze, kterou budeme používat, je velice jednoduchou simulací bankovního prostředí pro úvěry.
 ### ERD
 ![alt text](https://github.com/Hamzic12/SQL-Alchemy/blob/main/ERD.png)
 ### Tabulky
 #### <b>CUSTOMER</b>
-Tabulka klientů a jejich základní informace
+Tabulka klientů a jejich základní informace:
 - <i>customer_id</i> = Identifikátor klienta
 - <i>name</i> = Jméno klienta
 - <i>surname</i> = Příjmení klienta
 - <i>active_flag</i> = Označení zda je klient aktivní
 #### <b>CUSTOMER_ADDRESS</b>
-Tabulka adres klientů</i>
+Tabulka adres klientů</i>:
 - <i>customer_address_id</i> = Identifikátor adresy
 - <i>psc</i> = PSČ 
 - <i>city</i> = Město
@@ -829,26 +835,26 @@ Tabulka adres klientů</i>
 - <i>domicile_flag</i> = Označení zda je to adresa trvalého bydliště
 - <i>customer_id</i> = Idenfitikátor klienta
 #### <b>CUSTOMER_CONTACT</b>
-Tabulka kontaktů na klienty
+Tabulka kontaktů na klienty:
 - <i>customer_contact_id</i> = Idenfitifkátor kontaktu
 - <i>phone</i> = Telefonní číslo
 - <i>email</i> = Email
 - <i>customer_id</i> = Identifikátor klienta
 #### <b>ACCOUNT</b>
-Tabulka účtů a informace o nich
+Tabulka účtů a informace o nich:
 - <i>account_id</i> = Identifikátor účtu
 - <i>acc_type</i> = Typ účtu
 - <i>acc_balance</i> = Zůstatek
 - <i>active_flag</i> = Označení zda je účet aktivní
 - <i>customer_id</i> = Identifikátor klienta
 #### <b>BANK_USER</b>
-Tabulka zaměsntanců a jejich základní informace
+Tabulka zaměsntanců a jejich základní informace:
 - <i>bank_user_id</i> = Identifikátor zaměstnance
 - <i>name</i> = Jméno zaměstnance
 - <i>surname</i> = Příjmení zaměstnance
 - <i>active_flag</i> = Označení zda je zaměstnanec aktivní
 #### <b>BANK_USER_ADDRESS</b>
-Tabulka adres zaměstnanců 
+Tabulka adres zaměstnanců:
 - <i>bank_user_adr_id</i> = Identifikátor adresy 
 - <i>psc</i> = PSČ
 - <i>city</i> = Město
@@ -857,7 +863,7 @@ Tabulka adres zaměstnanců
 - <i>domicile_flag</i> = Označení zda je to adresa trvalého bydliště
 - <i>bank_user_id</i> = Identifikátor zaměstnance
 #### <b>BANK_USER_CONTACT</b>
-Tabulka kontaktů na zaměstnance
+Tabulka kontaktů na zaměstnance:
 - <i>bank_user_contact_id</i> = Identifikátor kontaktu
 - <i>phone_work</i> = Pracovní telefonní číslo
 - <i>email_work</i> = Pracovní email
@@ -865,7 +871,7 @@ Tabulka kontaktů na zaměstnance
 - <i>email_personal</i> = Osobní email
 - <i>bank_user_id</i> = Identifikátor zaměstnance
 #### <b>LOAN_UNPAYED</b>
-Tabulka aktivních úvěrů a jejich informace
+Tabulka aktivních úvěrů a jejich informace:
 - <i>loan_id</i> = Identifikátor úvěru
 - <i>loan_type</i> = Typ úvěru
 - <i>rem_instalment</i> = Zbývající počet splátek
@@ -874,7 +880,7 @@ Tabulka aktivních úvěrů a jejich informace
 - <i>account_id</i> = Identifikátor účtu
 - <i>bank_user_id</i> = Identifikátor zaměstnance, který úvěr sjednal
 #### <b>LOAN_PAYED</b>
-Tabulka splacených úverů
+Tabulka splacených úverů:
 - <i>loan_hist_id</i> = Identifikace splaceného úvěru
 - <i>loan_type</i> = Typ úvěru
 - <i>instalment</i> = Výše úvěru
@@ -1140,10 +1146,10 @@ print(f"Seznam tabulek: {table_names}")
 - <b>sum()</b>: Součet hodnot v daném sloupci.
 - <b>avg()</b>: Průměr hodnot v daném sloupci.
 - <b>count()</b>: Počet záznamů v dané tabulce.
-- <b>min()</b>: Minimum hodnot v daném sloupci.
-- <b>max()</b>: Maximum hodnot v daném sloupci.
+- <b>min()</b>: Minimální hodnota v daném sloupci.
+- <b>max()</b>: Maximální hodnota v daném sloupci.
 
-Pro využití funkcí je potřeba importovat 'func':
+Pro využití funkcí je potřeba importovat `func`:
 ````
 from sqlalchemy import func
 ````
@@ -1162,11 +1168,11 @@ print(f"Počet zaměstnanců: {pocet_zamestnancu}")
 ````
 
 Proč .scalar?
-- Scalar se využívá pokud očekávám výstup o jedné hodnotě
-- Scalar nepoužijeme pokud chceme např. výběr všech sloupců z tabulky
+- Scalar se využívá pokud očekávám výstup o jedné hodnotě.
+- Scalar nepoužijeme pokud chceme např. výběr všech sloupců z tabulky.
 
 #### Group By
-Agregační funkce se dají kombinovat s klauzulí GROUP BY pro seskupení dat a výpočet agregací pro každou skupinu:
+Agregační funkce se dají kombinovat s klauzulí GROUP BY, sloužící k seskupení dat a výpočet agregací pro každou skupinu:
 ````
 session = Session()
 
@@ -1196,8 +1202,8 @@ Výpis výsledku:
 ````
 print(f"Průměrný plat pro zaměstnance s platem nad 50 000: {prumerny_plat}")
 ````
-### 1. Úkol:
-- Spočítat součet všech úvěru (LoanUnpayed)
+### 2.1 Úkol:
+- Spočítat součet všech úvěrů (LoanUnpayed)
 - Spočítat počet 'Hypo' úvěrů (LoanUnpayed)
 - Najít minimální balanci z účtů (Accounts)
 - Najít maximální balanci z účtů (Accounts)
@@ -1221,8 +1227,8 @@ print(f"Průměrná výše úvěru je: {avg_uver}Kč")
 ````
 
 ### Spojování tabulek
-Spojování tabulek (Joins) umožňuje kombinovat data z více tabulek v databázi do jediné tabulky.
-- Dnes si vysvětlíme tři základní joiny
+Spojování tabulek (JOIN) umožňuje kombinovat data z více tabulek v databázi do jediné tabulky.
+- Dnes si vysvětlíme tři základní joiny.
 ````
 from sqlalchemy import join
 ````
@@ -1269,8 +1275,9 @@ for adresa in vysledky:
         print(f"{adresa.ulice}, {adresa.mesto} - neobsazeno")
 ````
 
-### 2. Úkol:
-- Vytvořte všechny joiny, které jsme si zde představili nad tabulkami 'Customer' a 'CustomerAdress'
+### 2.2 Úkol:
+- Vytvořte všechny joiny, které jsme si zde představili nad tabulkami `Customer` a `CustomerAdress`.
+
 Řešení:
 ````
 vysledky_inner = session.query(Customer, CustomerAddress).join(CustomerAddress, Customer.customer_id == CustomerAddress.customer_id).all()
@@ -1307,7 +1314,7 @@ for kontakt in vysledky_right:
 ````
 
 ### Vytvoření cache
-Pro lepší výkonnost je možné využívat cachce - Malá, ale velice rychlá paměť
+Pro lepší výkonnost je možné využívat cachce - malá ale velice rychlá paměť.
 ````
 from werkzeug.utils import cached_property
 ````
@@ -1328,8 +1335,9 @@ Výpis:
 ````
 print(osoba.plne_jmeno)
 ````
-### 3. Úkol:
-- Vytvořte pro tabulku 'Customer' cache pro jméno a příjmení
+### 2.3 Úkol:
+- Vytvořte pro tabulku `Customer` cache pro jméno a příjmení.
+
 Řešení:
 ````
 class Customer(Base):
@@ -1605,7 +1613,7 @@ session.close()
 ### 1. Dotazy a analýzy:
 - Vypište všechny zákazníky a jejich zůstatky na účtech.
 - Vypočítejte celkový zůstatek na všech účtech.
-- Vyhledejte nezaplacené půjčky a připojte k nim jména zákazníků
+- Vyhledejte nezaplacené půjčky a připojte k nim jména zákazníků.
 - Sestavte přehled počtu zákazníků a bankovních uživatelů v jednotlivých městech.
 
 ### 2. Úpravy a aktualizace:
@@ -1622,4 +1630,3 @@ session.close()
 
 ### 4. Opravy a kontroly:
 - Vyhledejte a opravte chybné nebo nekonzistentní údaje v databázi (např. neodpovídající sumy).
-
