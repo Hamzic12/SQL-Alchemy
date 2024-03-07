@@ -8,15 +8,6 @@ Object Realtion Mapping (Objektově relační zobrazení) je programovací techn
 ````
 pip install sqlalchemy
 ````
-````
-pip install mysqlclient
-````
-````
-pip install mysql-connector-python
-````
-````
-pip install flask
-````
 ## 1. Část
 ### Tvorba databáze
 
